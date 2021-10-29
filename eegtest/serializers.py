@@ -12,6 +12,7 @@ class StimuliCategorySerializer(serializers.ModelSerializer):
 
 
 class StimuliListSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(read_only=True, source='get_str_id')
     category = StimuliCategorySerializer(many=False, read_only=True)
     test = serializers.PrimaryKeyRelatedField(read_only=True)
 

@@ -42,3 +42,7 @@ class Stimuli(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_str_id(self):
+        return str(self.pk)
+

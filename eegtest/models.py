@@ -26,9 +26,9 @@ class StimuliCategory(models.Model):
 
 
 class Stimuli(models.Model):
-    order_id = models.PositiveIntegerField(verbose_name='Order', blank=True, null=True)
+    index = models.PositiveIntegerField(verbose_name='Order index', blank=True, null=True)
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test',
-                             blank=True, null=True)
+                             blank=True, null=True, related_name='stimulus')
     category = models.ForeignKey(StimuliCategory, on_delete=models.CASCADE, verbose_name='Category',
                                  blank=True, null=True)
     title = models.CharField(max_length=250, verbose_name='Title', blank=True, null=True)

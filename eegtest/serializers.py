@@ -3,6 +3,31 @@ from rest_framework import serializers
 
 from .models import Test, StimuliCategory, Stimuli
 
+
+class StimuliCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StimuliCategory
+        fields = ['id', 'title']
+
+
+class StimuliListSerializer(serializers.ModelSerializer):
+    category = StimuliCategorySerializer(many=False, read_only=True)
+    test = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Stimuli
+        fields = ['id', 'index', 'test', 'category', 'title', 'description', 'duration', 'file']
+
+
+class StimuliSerializer(WritableNestedModelSerializer):
+    test = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Stimuli
+        fields = ['id', 'index', 'test', 'category', 'title', 'description', 'duration', 'file']
+
+
 class TestSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -17,24 +42,25 @@ class TestListSerializer(serializers.ModelSerializer):
         fields = ['id', 'title']
 
 
-class StimuliCategorySerializer(serializers.ModelSerializer):
+class TestDetailSerializer(serializers.ModelSerializer):
+    stimulus = StimuliListSerializer(many=True, read_only=True)
 
     class Meta:
-        model = StimuliCategory
-        fields = ['id', 'title']
+        model = Test
+        fields = ['id', 'title', 'stimulus']
 
 
-class StimuliSerializer(serializers.ModelSerializer):
+class TestDetailUpdateSerializer(WritableNestedModelSerializer):
+    stimulus = StimuliSerializer(many=True, required=False)
+
+    class Meta:
+        model = Test
+        fields = ['id', 'title', 'description', 'status', 'stimulus']
+
+
+class StimuliDetailSerializer(serializers.ModelSerializer):
     test = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Stimuli
-        fields = ['id', 'order_id', 'test', 'category', 'title', 'description', 'duration', 'file']
-
-
-class StimuliListSerializer(serializers.ModelSerializer):
-    test = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = Stimuli
-        fields = ['id', 'order_id', 'test', 'category', 'title', 'description', 'duration', 'file']
+        fields = ['id', 'index', 'test', 'category', 'title', 'description', 'duration', 'file']

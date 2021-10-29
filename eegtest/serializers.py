@@ -22,6 +22,7 @@ class StimuliListSerializer(serializers.ModelSerializer):
 
 
 class StimuliSerializer(WritableNestedModelSerializer):
+    id = serializers.ReadOnlyField(read_only=True, source='get_str_id')
     test = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:

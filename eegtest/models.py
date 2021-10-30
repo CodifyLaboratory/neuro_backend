@@ -1,5 +1,7 @@
 from django.db import models
 
+from user.models import User
+
 
 class Test(models.Model):
     title = models.CharField(max_length=250, unique=True, verbose_name='Title', blank=True, null=True)
@@ -45,4 +47,23 @@ class Stimuli(models.Model):
 
     def get_str_id(self):
         return str(self.pk)
+
+
+class TestResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='User',
+                             blank=True, null=True, related_name='results')
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test',
+                             blank=True, null=True, related_name='results')
+    title = models.CharField(max_length=250, verbose_name='Title', blank=True, null=True)
+    description = models.TextField(verbose_name='Description', blank=True, null=True)
+    file = models.FileField(verbose_name='File', blank=True, null=True)
+    date = models.DateField(verbose_name='Date of creation', auto_created=True)
+    status = models.BooleanField(verbose_name='Status', default=True)
+
+    class Meta:
+        verbose_name = 'Test result'
+        verbose_name_plural = 'Test results'
+
+    def __str__(self):
+        return self.title
 

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet
+from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet
 
 urlpatterns = [
     # Categories
@@ -19,4 +19,11 @@ urlpatterns = [
     path('stimulus/<int:pk>/', StimuliViewSet.as_view({'get': 'retrieve'})),
     path('stimulus/update/<int:pk>/', StimuliViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
     path('stimulus/delete/<int:pk>/', StimuliViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'})),
+
+    # Test Results
+    path('results/create/<int:pk>/', TestResultViewSet.as_view({'post': 'create'})),
+    path('results/', TestResultViewSet.as_view({'get': 'list'})),
+    path('results/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve'})),
+    path('results/update/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
+    path('results/delete/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'})),
 ]

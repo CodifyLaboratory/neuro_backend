@@ -1,7 +1,7 @@
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
-from .models import Test, StimuliCategory, Stimuli
+from .models import Test, StimuliCategory, Stimuli, TestResult
 
 
 class StimuliCategorySerializer(serializers.ModelSerializer):
@@ -66,3 +66,12 @@ class StimuliDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stimuli
         fields = ['id', 'index', 'test', 'category', 'title', 'description', 'duration', 'file']
+
+
+class TestResultSerializer(serializers.ModelSerializer):
+    test = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = TestResult
+        fields = ['id', 'test', 'title', 'description', 'file', 'date', 'status']
+        read_only_fields = ['user', ]

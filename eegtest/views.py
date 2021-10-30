@@ -4,8 +4,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
-    StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer
-from .models import Test, StimuliCategory, Stimuli
+    StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer
+from .models import Test, StimuliCategory, Stimuli, TestResult
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -57,5 +57,23 @@ class StimuliViewSet(ModelViewSet):
                 return StimuliSerializer
             elif self.action == 'retrieve' or self.action == 'list':
                 return StimuliListSerializer
+        except:
+            raise PermissionDenied
+
+
+class TestResultViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = TestResult.objects.all()
+
+    def perform_create(self, serializer):
+        test = Test.objects.get(id=self.kwargs['pk'], status=True)
+        return serializer.save(user=self.request.user, test=test)
+
+    def get_serializer_class(self):
+        try:
+            if self.action == 'create' or self.action == 'update' or self.action == 'destroy':
+                return TestResultSerializer
+            elif self.action == 'retrieve' or self.action == 'list':
+                return TestResultSerializer
         except:
             raise PermissionDenied

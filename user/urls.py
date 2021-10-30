@@ -19,5 +19,4 @@ urlpatterns = [
     path('auth/users/delete/<int:pk>/', UserViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'})),
 
     path('auth/admins/create/', AdminViewSet.as_view({'post': 'create'})),
-
 ]

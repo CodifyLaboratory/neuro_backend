@@ -28,6 +28,17 @@ class City(models.Model):
         return self.name
 
 
+class Gender(models.Model):
+    name = models.CharField(max_length=250, unique=True, verbose_name='Name', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Gender'
+        verbose_name_plural = 'Genders'
+
+    def __str__(self):
+        return self.name
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(db_index=True, unique=True, blank=True, null=True, verbose_name='Email')
     password = models.CharField(max_length=128, blank=True, null=True, verbose_name='Password')
@@ -51,15 +62,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserProfile(models.Model):
-    GENDER_CHOICES = [
-        ('Male', 'Male'),
-        ('Female', 'Female'),
-    ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='User',
                                 related_name='user_profile')
     first_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='Name')
     last_name = models.CharField(max_length=100, blank=True, null=True, verbose_name='Lastname')
-    gender = models.CharField(verbose_name='Gender', max_length=250, choices=GENDER_CHOICES, null=True, blank=True)
+    gender = models.ForeignKey(Gender, verbose_name='Gender', on_delete=models.CASCADE, null=True, blank=True)
     age = models.PositiveIntegerField(verbose_name='Age', null=True, blank=True)
     phone = models.CharField(max_length=100, blank=True, null=True, verbose_name='Phone')
     country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name='Country', null=True, blank=True)

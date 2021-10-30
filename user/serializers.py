@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from neuro import settings
-from .models import User, City, Country, UserProfile
+from .models import User, City, Country, UserProfile, Gender
 
 
 class UserTokenSerializer(TokenObtainPairSerializer):
@@ -85,6 +85,12 @@ class CitySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'country']
 
 
+class GenderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Gender
+        fields = ['id', 'name']
+
+
 class UserProfileSerializer(WritableNestedModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -97,6 +103,7 @@ class UserProfileListSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     country = CountrySerializer(many=False, read_only=True)
     city = CountrySerializer(many=False, read_only=True)
+    gender = GenderSerializer(many=False, read_only=True)
 
     class Meta:
         model = UserProfile

@@ -22,7 +22,7 @@ class TestViewSet(ModelViewSet):
             if self.action == 'create' or self.action == 'update' or self.action == 'destroy' or self.action == 'retrieve':
                 return Test.objects.all()
             elif self.action == 'list' and self.request.user.is_professor:
-                return Test.objects.all()
+                return Test.objects.all().order_by('id')
             elif self.action == 'list' and self.request.user.is_simple_user:
                 return Test.objects.filter(status=True)
         except:
@@ -63,11 +63,21 @@ class StimuliViewSet(ModelViewSet):
 
 class TestResultViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = TestResult.objects.all()
 
     def perform_create(self, serializer):
-        test = Test.objects.get(id=self.kwargs['pk'], status=True)
+        test = Test.objects.get(id=self.kwargs['pk'])
         return serializer.save(user=self.request.user, test=test)
+
+    def get_queryset(self):
+        try:
+            if self.action == 'create' or self.action == 'update' or self.action == 'destroy' or self.action == 'retrieve':
+                return TestResult.objects.all()
+            elif self.action == 'list' and self.request.user.is_professor:
+                return TestResult.objects.all()
+            elif self.action == 'list' and self.request.user.is_simple_user:
+                return TestResult.objects.filter(user=self.request.user, status=True)
+        except:
+            raise PermissionDenied
 
     def get_serializer_class(self):
         try:

@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import date
 from user.models import User
 
 
@@ -57,8 +57,8 @@ class TestResult(models.Model):
     title = models.CharField(max_length=250, verbose_name='Title', blank=True, null=True)
     description = models.TextField(verbose_name='Description', blank=True, null=True)
     file = models.FileField(verbose_name='File', blank=True, null=True)
-    date = models.DateField(verbose_name='Date of creation', auto_created=True)
-    status = models.BooleanField(verbose_name='Status', default=True)
+    date = models.DateField(verbose_name='Date of creation', default=date.today)
+    status = models.BooleanField(verbose_name='Status', default=False)
 
     class Meta:
         verbose_name = 'Test result'

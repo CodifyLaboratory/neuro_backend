@@ -1,6 +1,6 @@
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
-
+from django.db.models import Sum
 from .models import Test, StimuliCategory, Stimuli, TestResult
 
 
@@ -46,10 +46,18 @@ class TestListSerializer(serializers.ModelSerializer):
 
 class TestDetailSerializer(serializers.ModelSerializer):
     stimulus = StimuliListSerializer(many=True, read_only=True)
+    stimulus_count = serializers.SerializerMethodField()
+    total_duration = serializers.SerializerMethodField()
 
     class Meta:
         model = Test
-        fields = ['id', 'title', 'stimulus']
+        fields = ['id', 'title',  'stimulus_count', 'total_duration', 'stimulus']
+
+    def get_stimulus_count(self, obj):
+        return Stimuli.objects.filter(test=obj.id).count()
+
+    def get_total_duration(self, obj):
+        return Stimuli.objects.filter(test=obj.id).aggregate(Sum('duration'))['duration__sum']
 
 
 class TestDetailUpdateSerializer(WritableNestedModelSerializer):
@@ -73,5 +81,5 @@ class TestResultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestResult
-        fields = ['id', 'test', 'title', 'description', 'file', 'date', 'status']
-        read_only_fields = ['user', ]
+        fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status']
+        read_only_fields = ['user', 'date']

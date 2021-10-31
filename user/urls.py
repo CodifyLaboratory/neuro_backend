@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import UserTokenView, AdminTokenView, CountryViewSet, CityViewSet, UserViewSet, AdminViewSet
+from .views import UserTokenView, AdminTokenView, CountryViewSet, CityViewSet, UserViewSet, AdminViewSet, GenderViewSet
 
 urlpatterns = [
     path('auth/users/token/', UserTokenView.as_view()),
@@ -9,8 +9,9 @@ urlpatterns = [
     path('auth/admins/token/', AdminTokenView.as_view()),
     path('auth/admins/token/refresh/', AdminTokenView.as_view()),
 
-    path('contries/', CountryViewSet.as_view({'get': 'list'})),
+    path('countries/', CountryViewSet.as_view({'get': 'list'})),
     path('cities/', CityViewSet.as_view({'get': 'list'})),
+    path('genders/', GenderViewSet.as_view({'get': 'list'})),
 
     path('auth/users/create/', UserViewSet.as_view({'post': 'create'})),
     path('auth/users/', UserViewSet.as_view({'get': 'list'})),

@@ -7,8 +7,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 User = get_user_model()
 
 from .serializers import UserTokenSerializer, AdminTokenSerializer, CountrySerializer, CitySerializer, \
-    UserCreateSerializer, UserListSerializer, AdminCreateSerializer, UserSerializer
-from .models import Country, City
+    UserCreateSerializer, UserListSerializer, AdminCreateSerializer, UserSerializer, GenderSerializer
+from .models import Country, City, Gender
 
 
 class UserTokenView(TokenObtainPairView):
@@ -25,6 +25,12 @@ class CountryViewSet(ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
+
+
+class GenderViewSet(ReadOnlyModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = Gender.objects.all()
+    serializer_class = GenderSerializer
 
 
 class CityViewSet(ReadOnlyModelViewSet):

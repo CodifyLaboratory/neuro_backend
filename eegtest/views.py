@@ -4,7 +4,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
-    StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer
+    StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
+    TestResultDetailSerializer
 from .models import Test, StimuliCategory, Stimuli, TestResult
 
 
@@ -84,6 +85,6 @@ class TestResultViewSet(ModelViewSet):
             if self.action == 'create' or self.action == 'update' or self.action == 'destroy':
                 return TestResultSerializer
             elif self.action == 'retrieve' or self.action == 'list':
-                return TestResultSerializer
+                return TestResultDetailSerializer
         except:
             raise PermissionDenied

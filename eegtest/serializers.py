@@ -2,6 +2,7 @@ from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 from django.db.models import Sum
 from .models import Test, StimuliCategory, Stimuli, TestResult
+from user.serializers import UserListSerializer
 
 
 class StimuliCategorySerializer(serializers.ModelSerializer):
@@ -15,10 +16,14 @@ class StimuliListSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(read_only=True, source='get_str_id')
     category = StimuliCategorySerializer(many=False, read_only=True)
     test = serializers.PrimaryKeyRelatedField(read_only=True)
+    seconds = serializers.SerializerMethodField()
 
     class Meta:
         model = Stimuli
-        fields = ['id', 'index', 'test', 'category', 'title', 'description', 'duration', 'file']
+        fields = ['id', 'index', 'test', 'category', 'title', 'description', 'duration', 'seconds', 'file']
+
+    def get_seconds(self, obj):
+        return obj.duration.total_seconds()
 
 
 class StimuliSerializer(WritableNestedModelSerializer):
@@ -78,6 +83,16 @@ class StimuliDetailSerializer(serializers.ModelSerializer):
 
 class TestResultSerializer(serializers.ModelSerializer):
     test = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = TestResult
+        fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status']
+        read_only_fields = ['user', 'date']
+
+
+class TestResultDetailSerializer(serializers.ModelSerializer):
+    user = UserListSerializer(many=False, read_only=True)
+    test = TestListSerializer(many=False, read_only=True)
 
     class Meta:
         model = TestResult

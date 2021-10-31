@@ -51,7 +51,7 @@ class TestDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Test
-        fields = ['id', 'title',  'stimulus_count', 'total_duration', 'stimulus']
+        fields = ['id', 'title', 'description', 'stimulus_count', 'total_duration', 'stimulus']
 
     def get_stimulus_count(self, obj):
         return Stimuli.objects.filter(test=obj.id).count()

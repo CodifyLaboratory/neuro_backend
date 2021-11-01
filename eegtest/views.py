@@ -1,12 +1,13 @@
-from django.contrib.auth import get_user_model
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.decorators import api_view
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
+from .models import Test, StimuliCategory, Stimuli, TestResult
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer
-from .models import Test, StimuliCategory, Stimuli, TestResult
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -88,3 +89,13 @@ class TestResultViewSet(ModelViewSet):
                 return TestResultDetailSerializer
         except:
             raise PermissionDenied
+
+
+@api_view()
+def get_headset(request):
+    from .example_epoc_plus import EEG
+    print(EEG().get_headset())
+    if EEG().get_headset() == 1:
+        return Response('Headset yes.', status=200)
+    else:
+        return Response('Headset no.', status=404)

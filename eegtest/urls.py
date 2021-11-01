@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet
+from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, get_headset
 
 urlpatterns = [
     # Categories
@@ -26,4 +26,7 @@ urlpatterns = [
     path('results/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve'})),
     path('results/update/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
     path('results/delete/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'})),
+
+    # Get headset
+    path('headsets/', get_headset),
 ]

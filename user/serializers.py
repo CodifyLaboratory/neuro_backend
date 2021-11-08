@@ -31,6 +31,7 @@ class AdminTokenSerializer(TokenObtainPairSerializer):
             raise serializers.ValidationError('This email is already taken.')
         data.update({'is_professor': self.user.is_professor})
         data.update({'user_id': self.user.id})
+        data.update({'user_email': self.user.email})
         data.update({'time_access': settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME']})
         data.update({'time_refresh': settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME']})
         return data

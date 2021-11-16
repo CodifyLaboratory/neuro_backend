@@ -214,12 +214,20 @@ LIVE
     To get a client id and a client secret, you must connect to your Emotiv account on emotiv.com and create a Cortex app
     For training purpose, you should set empty string for license
 """
+# user = {
+#     "license": "",
+#     "client_id": "N0mvmXCzhTLbYNVYDkAMmrUf5WK1YlvPA7D0ujZm",
+#     "client_secret": "3KVc00v5obtcBzo96moG0wjdEjJ8bNjsgeLl3VzGPbTMnp0woJPmB3dBbxOZ00V66XJTKHcWAeldMSbcvmVTQGGHLcPOSJZPWHweWnVvGUTu1b6a8NxlyWqLWrHf8WgA",
+#     "debit": 100
+# }
+
 user = {
-    "license": "79e12eb3-66a9-4517-bd13-84ba9a43afd1",
-    "client_id": "N0mvmXCzhTLbYNVYDkAMmrUf5WK1YlvPA7D0ujZm",
-    "client_secret": "3KVc00v5obtcBzo96moG0wjdEjJ8bNjsgeLl3VzGPbTMnp0woJPmB3dBbxOZ00V66XJTKHcWAeldMSbcvmVTQGGHLcPOSJZPWHweWnVvGUTu1b6a8NxlyWqLWrHf8WgA",
+    "license": "",
+    "client_id": "ZsMXJvVqaOR4Pq5QUY46Djw4wXNjni3MK4NBihh3",
+    "client_secret": "7OwHHGELxD9tQLoo2J5g1kswqKcjkoD51XoX8qGcjBSytuqt3gtg9Yuq0f1KX6fRNzJIn3DVGZ3FNQ7WflfHSMvWr4YKhldprljskJBAFdHuo8xYpIgoEdlzZlMQzLS8",
     "debit": 100
 }
+
 
 # name of training profile
 profile_name = 'neuro'

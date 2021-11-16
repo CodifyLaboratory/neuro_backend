@@ -1,18 +1,18 @@
 import json
 import numpy as np
 from scipy import signal
-import requests 
-  
+import requests
+
 # api-endpoint 
 URL = "http://108.160.141.166/api/get_data_headset"
 data = ''
 # sending get request and saving the response as response object 
-rrr = requests.post(url = URL, data = data) 
-  
-json_str1 = rrr.text 
-#print("The pastebin URL is:%s"%pastebin_url)
+rrr = requests.post(url=URL, data=data)
 
-#[theta,alpha,betaL,betaH,gamma]
+json_str1 = rrr.text
+# print("The pastebin URL is:%s"%pastebin_url)
+
+# [theta,alpha,betaL,betaH,gamma]
 json_str = '{\
 	"f3_1": ["0.769-1", "0.772-1", "0.727-1", "1.244-1", "0.533-1"],\
 	"f3_2": ["0.649-1", "0.759-1", "0.763-1", "1.3-1", "0.546-1"],\
@@ -2018,8 +2018,10 @@ json_str = '{\
 	"fc6_143": ["0-18", "0-18", "0-18", "0-18", "0-18"]\
 }'
 
+
 class Coherence:
     "This is Object that has 4 attributes: wave, wave signal, time of sampling, value of signal"
+
     def __init__(self, wave_name, wave_signal, value, sampling_time):
         self.wave_name = wave_name
         self.wave_signal = wave_signal
@@ -2028,10 +2030,8 @@ class Coherence:
 
     def print_obj(self):
         print(f'{self.wave_name}+{self.wave_signal}+{self.value}+{self.sampling_time}')
-#########################################################################################################
-#########################################################################################################
-#########################################################################################################
-#########################################################################################################
+
+
 class CustomType:
     def __init__(self, param, value):
         self.param = param
@@ -2042,278 +2042,301 @@ class CustomType:
         Serialize the object custom object
         '''
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-#########################################################################################################
-#########################################################################################################
-#########################################################################################################
-#########################################################################################################
+
+
+
 Stimulus_Durations_in_order = [5, 2, 8, 3];
 Final_Result = []
-#########################################################################################################
+
 ##variables for Frontal Asymmetry calculation
 f4_alpha = []
 f3_alpha = []
 f8_alpha = []
 f7_alpha = []
 #########################################################################################################
-#variables for Coherence calculation
+# variables for Coherence calculation
 CoherenceObj_list_wave1 = []
 CoherenceObj_list_wave2 = []
 CoherenceObj_list_wave3 = []
 #########################################################################################################
-#variables for TAR calculation
+# variables for TAR calculation
 f4_theta = []
 f3_theta = []
 p7_alpha = []
 p8_alpha = []
+
+
 #########################################################################################################
 #########################################################################################################
 def get_json_data():
-	result = []
-	i = 1
-	for item in final_fa:
-		obj = CustomType("FA" + str(i) + "_val-" , item)
-		result.append(json.loads(obj.toJSON()))
-		i = i + 1
-	i = 1
-	for item in final_coherence:
-		obj = CustomType("Co_val-" + str(i) , item)
-		result.append(json.loads(obj.toJSON()))
-		i = i + 1
-	i = 1
-	for item in final_tar:
-		obj = CustomType("TAR_val-" + str(i) , item)
-		result.append(json.loads(obj.toJSON()))
-		i = i + 1
+    result = []
+    i = 1
+    for item in final_fa:
+        obj = CustomType("FA" + str(i) + "_val-", item)
+        result.append(json.loads(obj.toJSON()))
+        i = i + 1
+    i = 1
+    for item in final_coherence:
+        obj = CustomType("Co_val-" + str(i), item)
+        result.append(json.loads(obj.toJSON()))
+        i = i + 1
+    i = 1
+    for item in final_tar:
+        obj = CustomType("TAR_val-" + str(i), item)
+        result.append(json.loads(obj.toJSON()))
+        i = i + 1
 
-	return json.dumps(result)
+    return json.dumps(result)
+
+
 #########################################################################################################
 #########################################################################################################
 def Calculate_Frontal_Asymmetry(myjson):
-	json_obj = json.loads(myjson)
-	Frontal_asymmetry1_array = []
-	Frontal_asymmetry2_array = []
+    json_obj = json.loads(myjson)
+    Frontal_asymmetry1_array = []
+    Frontal_asymmetry2_array = []
 
-	stimulus_start_time = 0
-	stimulus_end_time = 0
-	for i in range(len(Stimulus_Durations_in_order)):
-		stimulus_end_time = Stimulus_Durations_in_order[i] + stimulus_start_time
-		print("start time is:" , stimulus_start_time)
-		print("end time is:" , stimulus_end_time)
-		for key in json_obj.keys():
-			if key.startswith('f4') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(json_obj[key][1].split('-')[1]) > stimulus_start_time) :
-				f4_alpha.append(json_obj[key][1].split('-')[0])
-			if key.startswith('f3') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(json_obj[key][1].split('-')[1]) > stimulus_start_time) :
-				f3_alpha.append(json_obj[key][1].split('-')[0])
-			if key.startswith('f8') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(json_obj[key][1].split('-')[1]) > stimulus_start_time) :
-				f8_alpha.append(json_obj[key][1].split('-')[0])
-			if key.startswith('f7') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(json_obj[key][1].split('-')[1]) > stimulus_start_time) :
-				f7_alpha.append(json_obj[key][1].split('-')[0])
-		#print("len f4#######################:", len(f4_alpha))
-		#print("len f3#######################:", len(f3_alpha))
-		for i in range(len(f4_alpha)):
-			nomin_f4 = f4_alpha[i]
-			denom_f3 = f3_alpha[i]
-			nomin_f8 = f8_alpha[i]
-			denom_f7 = f7_alpha[i]
-			#print("f4 nomin:" , np.log(float(nomin)))
-			#print("f3 nomin:" , np.log(float(denom)))
-			Frontal_asymmetry1_array.append(np.log(float(nomin_f4)) - np.log(float(denom_f3)))
-			Frontal_asymmetry2_array.append(np.log(float(nomin_f8)) - np.log(float(denom_f7)))
-		print("len Frontal_asymmetry1_array#######################:", len(Frontal_asymmetry1_array))
-		f4_alpha.clear()
-		f3_alpha.clear()
-		f8_alpha.clear()
-		f7_alpha.clear()
-		stimulus_start_time = stimulus_end_time
-	print("len FA1 is:" , len(Frontal_asymmetry1_array))
-	print("len FA2 is:" , len(Frontal_asymmetry2_array))
-	val_FA1 = '{0:.2f}'.format(np.mean(Frontal_asymmetry1_array))
-	val_FA2 = '{0:.2f}'.format(np.mean(Frontal_asymmetry2_array))
-	print("final val FA1:", val_FA1)
-	print("final val FA2:", val_FA2)
-	FA_arr = []
-	FA_arr.append(val_FA1)
-	FA_arr.append(val_FA2)
-	return FA_arr
+    stimulus_start_time = 0
+    stimulus_end_time = 0
+    for i in range(len(Stimulus_Durations_in_order)):
+        stimulus_end_time = Stimulus_Durations_in_order[i] + stimulus_start_time
+        print("start time is:", stimulus_start_time)
+        print("end time is:", stimulus_end_time)
+        for key in json_obj.keys():
+            if key.startswith('f4') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
+                    json_obj[key][1].split('-')[1]) > stimulus_start_time):
+                f4_alpha.append(json_obj[key][1].split('-')[0])
+            if key.startswith('f3') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
+                    json_obj[key][1].split('-')[1]) > stimulus_start_time):
+                f3_alpha.append(json_obj[key][1].split('-')[0])
+            if key.startswith('f8') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
+                    json_obj[key][1].split('-')[1]) > stimulus_start_time):
+                f8_alpha.append(json_obj[key][1].split('-')[0])
+            if key.startswith('f7') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
+                    json_obj[key][1].split('-')[1]) > stimulus_start_time):
+                f7_alpha.append(json_obj[key][1].split('-')[0])
+        # print("len f4#######################:", len(f4_alpha))
+        # print("len f3#######################:", len(f3_alpha))
+        for i in range(len(f4_alpha)):
+            nomin_f4 = f4_alpha[i]
+            denom_f3 = f3_alpha[i]
+            nomin_f8 = f8_alpha[i]
+            denom_f7 = f7_alpha[i]
+            # print("f4 nomin:" , np.log(float(nomin)))
+            # print("f3 nomin:" , np.log(float(denom)))
+            Frontal_asymmetry1_array.append(np.log(float(nomin_f4)) - np.log(float(denom_f3)))
+            Frontal_asymmetry2_array.append(np.log(float(nomin_f8)) - np.log(float(denom_f7)))
+        print("len Frontal_asymmetry1_array#######################:", len(Frontal_asymmetry1_array))
+        f4_alpha.clear()
+        f3_alpha.clear()
+        f8_alpha.clear()
+        f7_alpha.clear()
+        stimulus_start_time = stimulus_end_time
+    print("len FA1 is:", len(Frontal_asymmetry1_array))
+    print("len FA2 is:", len(Frontal_asymmetry2_array))
+    val_FA1 = '{0:.2f}'.format(np.mean(Frontal_asymmetry1_array))
+    val_FA2 = '{0:.2f}'.format(np.mean(Frontal_asymmetry2_array))
+    print("final val FA1:", val_FA1)
+    print("final val FA2:", val_FA2)
+    FA_arr = []
+    FA_arr.append(val_FA1)
+    FA_arr.append(val_FA2)
+    return FA_arr
+
+
 #########################################################################################################
 #########################################################################################################
 def Calculate_Coherence_Phase(myjson, wave1, wave1_signal, wave2, wave2_signal, wave3, wave3_signal):
-	json_obj = json.loads(myjson)
+    json_obj = json.loads(myjson)
+
+    for key in json_obj.keys():
+        if key.startswith(wave1):
+            if wave1_signal == 'theta':
+                ###### wave_name,wave_signal,value,sampling_time
+                Co_obj = Coherence(wave1, 'theta', float(json_obj[key][0].split('-')[0]),
+                                   int(json_obj[key][0].split('-')[1]))
+                CoherenceObj_list_wave1.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][0].split('-')[0]))
+            if wave1_signal == 'alpha':
+                Co_obj = Coherence(wave1, 'alpha', float(json_obj[key][1].split('-')[0]),
+                                   int(json_obj[key][1].split('-')[1]))
+                CoherenceObj_list_wave1.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][1].split('-')[0]))
+            if wave1_signal == 'betaL':
+                Co_obj = Coherence(wave1, 'betaL', float(json_obj[key][2].split('-')[0]),
+                                   int(json_obj[key][2].split('-')[1]))
+                CoherenceObj_list_wave1.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][2].split('-')[0]))
+            if wave1_signal == 'betaH':
+                Co_obj = Coherence(wave1, 'betaH', float(json_obj[key][3].split('-')[0]),
+                                   int(json_obj[key][3].split('-')[1]))
+                CoherenceObj_list_wave1.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][3].split('-')[0]))
+            if wave1_signal == 'gamma':
+                Co_obj = Coherence(wave1, 'gamma', float(json_obj[key][4].split('-')[0]),
+                                   int(json_obj[key][4].split('-')[1]))
+                CoherenceObj_list_wave1.append(Co_obj)
+        # wave1_array_values.append(float(json_obj[key][4].split('-')[0]))
+
+    for key in json_obj.keys():
+        if key.startswith(wave2):
+            if wave2_signal == 'theta':
+                ###### wave_name,wave_signal,value,sampling_time
+                Co_obj = Coherence(wave2, 'theta', float(json_obj[key][0].split('-')[0]),
+                                   int(json_obj[key][0].split('-')[1]))
+                CoherenceObj_list_wave2.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][0].split('-')[0]))
+            if wave2_signal == 'alpha':
+                Co_obj = Coherence(wave2, 'alpha', float(json_obj[key][1].split('-')[0]),
+                                   int(json_obj[key][1].split('-')[1]))
+                CoherenceObj_list_wave2.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][1].split('-')[0]))
+            if wave2_signal == 'betaL':
+                Co_obj = Coherence(wave2, 'betaL', float(json_obj[key][2].split('-')[0]),
+                                   int(json_obj[key][2].split('-')[1]))
+                CoherenceObj_list_wave2.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][2].split('-')[0]))
+            if wave2_signal == 'betaH':
+                Co_obj = Coherence(wave2, 'betaH', float(json_obj[key][3].split('-')[0]),
+                                   int(json_obj[key][3].split('-')[1]))
+                CoherenceObj_list_wave2.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][3].split('-')[0]))
+            if wave2_signal == 'gamma':
+                Co_obj = Coherence(wave2, 'gamma', float(json_obj[key][4].split('-')[0]),
+                                   int(json_obj[key][4].split('-')[1]))
+                CoherenceObj_list_wave2.append(Co_obj)
+        # wave1_array_values.append(float(json_obj[key][4].split('-')[0]))
+
+    for key in json_obj.keys():
+        if key.startswith(wave3):
+            if wave3_signal == 'theta':
+                ###### wave_name,wave_signal,value,sampling_time
+                Co_obj = Coherence(wave3, 'theta', float(json_obj[key][0].split('-')[0]),
+                                   int(json_obj[key][0].split('-')[1]))
+                CoherenceObj_list_wave3.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][0].split('-')[0]))
+            if wave3_signal == 'alpha':
+                Co_obj = Coherence(wave3, 'alpha', float(json_obj[key][1].split('-')[0]),
+                                   int(json_obj[key][1].split('-')[1]))
+                CoherenceObj_list_wave3.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][1].split('-')[0]))
+            if wave3_signal == 'betaL':
+                Co_obj = Coherence(wave3, 'betaL', float(json_obj[key][2].split('-')[0]),
+                                   int(json_obj[key][2].split('-')[1]))
+                CoherenceObj_list_wave3.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][2].split('-')[0]))
+            if wave3_signal == 'betaH':
+                Co_obj = Coherence(wave3, 'betaH', float(json_obj[key][3].split('-')[0]),
+                                   int(json_obj[key][3].split('-')[1]))
+                CoherenceObj_list_wave3.append(Co_obj)
+            # wave1_array_values.append(float(json_obj[key][3].split('-')[0]))
+            if wave3_signal == 'gamma':
+                Co_obj = Coherence(wave3, 'gamma', float(json_obj[key][4].split('-')[0]),
+                                   int(json_obj[key][4].split('-')[1]))
+                CoherenceObj_list_wave3.append(Co_obj)
+        # wave1_array_values.append(float(json_obj[key][4].split('-')[0]))
+
+    tempVal_CoherenceObj_list_wave1 = []
+    tempVal_CoherenceObj_list_wave2 = []
+    tempVal_CoherenceObj_list_wave3 = []
+
+    Final_Coherence_list = []
+    stimulus_start_time = 0
+    stimulus_end_time = 0
+    for i in range(len(Stimulus_Durations_in_order)):
+        stimulus_end_time = Stimulus_Durations_in_order[i] + stimulus_start_time
+        print("start time is:", stimulus_start_time)
+        print("end time is:", stimulus_end_time)
+        for i in range(len(CoherenceObj_list_wave1)):
+            tmp1 = CoherenceObj_list_wave1[i]
+            if (tmp1.sampling_time <= stimulus_end_time) and (tmp1.sampling_time > stimulus_start_time):
+                tempVal_CoherenceObj_list_wave1.append(tmp1.value)
+        for i in range(len(CoherenceObj_list_wave2)):
+            tmp2 = CoherenceObj_list_wave2[i]
+            if (tmp2.sampling_time <= stimulus_end_time) and (tmp1.sampling_time > stimulus_start_time):
+                tempVal_CoherenceObj_list_wave2.append(tmp2.value)
+        for i in range(len(CoherenceObj_list_wave3)):
+            tmp3 = CoherenceObj_list_wave3[i]
+            if (tmp3.sampling_time <= stimulus_end_time) and (tmp1.sampling_time > stimulus_start_time):
+                tempVal_CoherenceObj_list_wave3.append(tmp3.value)
+
+        ###########################################
+        # for v in tempVal_CoherenceObj_list_wave1:
+        #	print("tempVal_CoherenceObj_list_wave1 values is:", v)
+
+        # for v in tempVal_CoherenceObj_list_wave2:
+        #	print("tempVal_CoherenceObj_list_wave2 values is:", v)
+
+        # for v in tempVal_CoherenceObj_list_wave3:
+        #	print("tempVal_CoherenceObj_list_wave3 values is:", v)
+
+        ###########################################
+        c1 = signal.coherence(tempVal_CoherenceObj_list_wave1, tempVal_CoherenceObj_list_wave2)
+        c2 = signal.coherence(tempVal_CoherenceObj_list_wave1, tempVal_CoherenceObj_list_wave3)
+        c3 = signal.coherence(tempVal_CoherenceObj_list_wave2, tempVal_CoherenceObj_list_wave3)
+        PC1 = np.nanmean(c1[1]) if np.any(np.isfinite(c1[1])) else 1
+        PC2 = np.nanmean(c2[1]) if np.any(np.isfinite(c2[1])) else 1
+        PC3 = np.nanmean(c3[1]) if np.any(np.isfinite(c3[1])) else 1
+        PC = (PC1 + PC2 + PC3) / 3 * 100
+        PC = '{0:.2f}'.format(PC)
+        Final_Coherence_list.append(PC)
+
+    # print("Coherence value for duration:", stimulus_end_time, " is:", PC)
+
+    # print("len tempVal_CoherenceObj_list_wave1#######################:", len(tempVal_CoherenceObj_list_wave1))
+    # print("len tempVal_CoherenceObj_list_wave2#######################:", len(tempVal_CoherenceObj_list_wave2))
+    # print("len tempVal_CoherenceObj_list_wave3#######################:", len(tempVal_CoherenceObj_list_wave3))
+    tempVal_CoherenceObj_list_wave1.clear()
+    tempVal_CoherenceObj_list_wave2.clear()
+    tempVal_CoherenceObj_list_wave3.clear()
+    stimulus_start_time = stimulus_end_time
+
+    print("len Final_Coherence_list is:", len(Final_Coherence_list))
+    for v in Final_Coherence_list:
+        print("Coherence values is:", v)
+
+    return Final_Coherence_list
 
 
-	for key in json_obj.keys():
-		if key.startswith(wave1):
-			if wave1_signal == 'theta':
-				###### wave_name,wave_signal,value,sampling_time
-				Co_obj = Coherence(wave1, 'theta', float(json_obj[key][0].split('-')[0]), int(json_obj[key][0].split('-')[1]))
-				CoherenceObj_list_wave1.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][0].split('-')[0]))
-			if wave1_signal == 'alpha':
-				Co_obj = Coherence(wave1, 'alpha', float(json_obj[key][1].split('-')[0]), int(json_obj[key][1].split('-')[1]))
-				CoherenceObj_list_wave1.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][1].split('-')[0]))
-			if wave1_signal == 'betaL':
-				Co_obj = Coherence(wave1, 'betaL', float(json_obj[key][2].split('-')[0]), int(json_obj[key][2].split('-')[1]))
-				CoherenceObj_list_wave1.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][2].split('-')[0]))
-			if wave1_signal == 'betaH':
-				Co_obj = Coherence(wave1, 'betaH', float(json_obj[key][3].split('-')[0]), int(json_obj[key][3].split('-')[1]))
-				CoherenceObj_list_wave1.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][3].split('-')[0]))
-			if wave1_signal == 'gamma':
-				Co_obj = Coherence(wave1, 'gamma', float(json_obj[key][4].split('-')[0]), int(json_obj[key][4].split('-')[1]))
-				CoherenceObj_list_wave1.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][4].split('-')[0]))
-
-	for key in json_obj.keys():
-		if key.startswith(wave2):
-			if wave2_signal == 'theta':
-				###### wave_name,wave_signal,value,sampling_time
-				Co_obj = Coherence(wave2, 'theta', float(json_obj[key][0].split('-')[0]), int(json_obj[key][0].split('-')[1]))
-				CoherenceObj_list_wave2.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][0].split('-')[0]))
-			if wave2_signal == 'alpha':
-				Co_obj = Coherence(wave2, 'alpha', float(json_obj[key][1].split('-')[0]), int(json_obj[key][1].split('-')[1]))
-				CoherenceObj_list_wave2.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][1].split('-')[0]))
-			if wave2_signal == 'betaL':
-				Co_obj = Coherence(wave2, 'betaL', float(json_obj[key][2].split('-')[0]), int(json_obj[key][2].split('-')[1]))
-				CoherenceObj_list_wave2.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][2].split('-')[0]))
-			if wave2_signal == 'betaH':
-				Co_obj = Coherence(wave2, 'betaH', float(json_obj[key][3].split('-')[0]), int(json_obj[key][3].split('-')[1]))
-				CoherenceObj_list_wave2.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][3].split('-')[0]))
-			if wave2_signal == 'gamma':
-				Co_obj = Coherence(wave2, 'gamma', float(json_obj[key][4].split('-')[0]), int(json_obj[key][4].split('-')[1]))
-				CoherenceObj_list_wave2.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][4].split('-')[0]))
-
-	for key in json_obj.keys():
-		if key.startswith(wave3):
-			if wave3_signal == 'theta':
-				###### wave_name,wave_signal,value,sampling_time
-				Co_obj = Coherence(wave3, 'theta', float(json_obj[key][0].split('-')[0]), int(json_obj[key][0].split('-')[1]))
-				CoherenceObj_list_wave3.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][0].split('-')[0]))
-			if wave3_signal == 'alpha':
-				Co_obj = Coherence(wave3, 'alpha', float(json_obj[key][1].split('-')[0]), int(json_obj[key][1].split('-')[1]))
-				CoherenceObj_list_wave3.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][1].split('-')[0]))
-			if wave3_signal == 'betaL':
-				Co_obj = Coherence(wave3, 'betaL', float(json_obj[key][2].split('-')[0]), int(json_obj[key][2].split('-')[1]))
-				CoherenceObj_list_wave3.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][2].split('-')[0]))
-			if wave3_signal == 'betaH':
-				Co_obj = Coherence(wave3, 'betaH', float(json_obj[key][3].split('-')[0]), int(json_obj[key][3].split('-')[1]))
-				CoherenceObj_list_wave3.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][3].split('-')[0]))
-			if wave3_signal == 'gamma':
-				Co_obj = Coherence(wave3, 'gamma', float(json_obj[key][4].split('-')[0]), int(json_obj[key][4].split('-')[1]))
-				CoherenceObj_list_wave3.append(Co_obj)
-				#wave1_array_values.append(float(json_obj[key][4].split('-')[0]))
-
-
-
-	tempVal_CoherenceObj_list_wave1 = []
-	tempVal_CoherenceObj_list_wave2 = []
-	tempVal_CoherenceObj_list_wave3 = []
-
-	Final_Coherence_list = []
-	stimulus_start_time = 0
-	stimulus_end_time = 0
-	for i in range(len(Stimulus_Durations_in_order)):
-		stimulus_end_time = Stimulus_Durations_in_order[i] + stimulus_start_time
-		print("start time is:" , stimulus_start_time)
-		print("end time is:" , stimulus_end_time)
-		for i in range(len(CoherenceObj_list_wave1)):
-			tmp1 = CoherenceObj_list_wave1[i]
-			if (tmp1.sampling_time <= stimulus_end_time) and (tmp1.sampling_time > stimulus_start_time):
-				tempVal_CoherenceObj_list_wave1.append(tmp1.value)
-		for i in range(len(CoherenceObj_list_wave2)):
-			tmp2 = CoherenceObj_list_wave2[i]
-			if (tmp2.sampling_time <= stimulus_end_time) and (tmp1.sampling_time > stimulus_start_time):
-				tempVal_CoherenceObj_list_wave2.append(tmp2.value)
-		for i in range(len(CoherenceObj_list_wave3)):
-			tmp3 = CoherenceObj_list_wave3[i]
-			if (tmp3.sampling_time <= stimulus_end_time) and (tmp1.sampling_time > stimulus_start_time):
-				tempVal_CoherenceObj_list_wave3.append(tmp3.value)
-		
-		###########################################
-		#for v in tempVal_CoherenceObj_list_wave1:
-		#	print("tempVal_CoherenceObj_list_wave1 values is:", v)
-
-		#for v in tempVal_CoherenceObj_list_wave2:
-		#	print("tempVal_CoherenceObj_list_wave2 values is:", v)
-
-		#for v in tempVal_CoherenceObj_list_wave3:
-		#	print("tempVal_CoherenceObj_list_wave3 values is:", v)
-
-		###########################################
-		c1 = signal.coherence(tempVal_CoherenceObj_list_wave1, tempVal_CoherenceObj_list_wave2)
-		c2 = signal.coherence(tempVal_CoherenceObj_list_wave1, tempVal_CoherenceObj_list_wave3)
-		c3 = signal.coherence(tempVal_CoherenceObj_list_wave2, tempVal_CoherenceObj_list_wave3)
-		PC1 = np.nanmean(c1[1]) if np.any(np.isfinite(c1[1])) else 1 
-		PC2 = np.nanmean(c2[1]) if np.any(np.isfinite(c2[1])) else 1
-		PC3 = np.nanmean(c3[1]) if np.any(np.isfinite(c3[1])) else 1
-		PC = (PC1 + PC2 + PC3)/3*100
-		PC = '{0:.2f}'.format(PC)
-		Final_Coherence_list.append(PC)
-
-		#print("Coherence value for duration:", stimulus_end_time, " is:", PC)
-
-		#print("len tempVal_CoherenceObj_list_wave1#######################:", len(tempVal_CoherenceObj_list_wave1))
-		#print("len tempVal_CoherenceObj_list_wave2#######################:", len(tempVal_CoherenceObj_list_wave2))
-		#print("len tempVal_CoherenceObj_list_wave3#######################:", len(tempVal_CoherenceObj_list_wave3))
-	tempVal_CoherenceObj_list_wave1.clear()
-	tempVal_CoherenceObj_list_wave2.clear()
-	tempVal_CoherenceObj_list_wave3.clear()
-	stimulus_start_time = stimulus_end_time
-
-
-	print("len Final_Coherence_list is:" , len(Final_Coherence_list))
-	for v in Final_Coherence_list:
-		print("Coherence values is:", v)
-
-	return Final_Coherence_list
-		
 #####################################################################################
 #####################################################################################
 def Calculate_TAR(myjson):
-	json_obj = json.loads(myjson)
-	Tar_array = []
-	
+    json_obj = json.loads(myjson)
+    Tar_array = []
 
-	stimulus_start_time = 0
-	stimulus_end_time = 0
-	for i in range(len(Stimulus_Durations_in_order)):
-		stimulus_end_time = Stimulus_Durations_in_order[i] + stimulus_start_time
-		print("start time is:" , stimulus_start_time)
-		print("end time is:" , stimulus_end_time)
-		for key in json_obj.keys():
-			if key.startswith('f4') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(json_obj[key][1].split('-')[1]) > stimulus_start_time) :
-				f4_theta.append(float(json_obj[key][0].split('-')[0]))
-			if key.startswith('f3') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(json_obj[key][1].split('-')[1]) > stimulus_start_time) :
-				f3_theta.append(float(json_obj[key][0].split('-')[0]))
-			if key.startswith('p8') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(json_obj[key][1].split('-')[1]) > stimulus_start_time) :
-				p8_alpha.append(float(json_obj[key][1].split('-')[0]))
-			if key.startswith('p7') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(json_obj[key][1].split('-')[1]) > stimulus_start_time) :
-				p7_alpha.append(float(json_obj[key][1].split('-')[0]))
-		Tar_value = (np.nanmean(f3_theta) + np.nanmean(f4_theta))/(np.nanmean(p7_alpha) + np.nanmean(p8_alpha))
-		Tar_value = '{0:.2f}'.format(Tar_value)
+    stimulus_start_time = 0
+    stimulus_end_time = 0
+    for i in range(len(Stimulus_Durations_in_order)):
+        stimulus_end_time = Stimulus_Durations_in_order[i] + stimulus_start_time
+        print("start time is:", stimulus_start_time)
+        print("end time is:", stimulus_end_time)
+        for key in json_obj.keys():
+            if key.startswith('f4') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
+                    json_obj[key][1].split('-')[1]) > stimulus_start_time):
+                f4_theta.append(float(json_obj[key][0].split('-')[0]))
+            if key.startswith('f3') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
+                    json_obj[key][1].split('-')[1]) > stimulus_start_time):
+                f3_theta.append(float(json_obj[key][0].split('-')[0]))
+            if key.startswith('p8') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
+                    json_obj[key][1].split('-')[1]) > stimulus_start_time):
+                p8_alpha.append(float(json_obj[key][1].split('-')[0]))
+            if key.startswith('p7') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
+                    json_obj[key][1].split('-')[1]) > stimulus_start_time):
+                p7_alpha.append(float(json_obj[key][1].split('-')[0]))
+        Tar_value = (np.nanmean(f3_theta) + np.nanmean(f4_theta)) / (np.nanmean(p7_alpha) + np.nanmean(p8_alpha))
+        Tar_value = '{0:.2f}'.format(Tar_value)
 
-		Tar_array.append(Tar_value)
-		f4_theta.clear()
-		f3_theta.clear()
-		p8_alpha.clear()
-		p7_alpha.clear()
-		stimulus_start_time = stimulus_end_time
+        Tar_array.append(Tar_value)
+        f4_theta.clear()
+        f3_theta.clear()
+        p8_alpha.clear()
+        p7_alpha.clear()
+        stimulus_start_time = stimulus_end_time
 
-	for v in Tar_array:
-		print("Tar values is:", v)
+    for v in Tar_array:
+        print("Tar values is:", v)
 
-	return Tar_array
-
+    return Tar_array
 
 
 #######################################################################################################
@@ -2324,3 +2347,5 @@ final_coherence = Calculate_Coherence_Phase(json_str, 'af4', 'theta', 'fc5', 'be
 final_tar = Calculate_TAR(json_str)
 result = get_json_data()
 print(result)
+print(final_fa)
+print(final_coherence)

@@ -1,33 +1,19 @@
-from cortex import Cortex
+from .cortex import Cortex
+from django.db import models
+from user.models import User
+from .models import Test
 
-class Subcribe():
+
+class Subcribe(models.Model):
     """
     A class to subscribe data stream.
-
-    Attributes
-    ----------
-    c : Cortex
-        Cortex communicate with Emotiv Cortex Service
-
-    Methods
-    -------
-    do_prepare_steps():
-        Do prepare steps before training.
-    sub(streams):
-        To subscribe to one or more data streams.
-    on_new_data_labels(*args, **kwargs):
-        To handle data labels of subscribed data 
-    on_new_eeg_data(*args, **kwargs):
-        To handle eeg data emitted from Cortex
-    on_new_mot_data(*args, **kwargs):
-        To handle motion data emitted from Cortex
-    on_new_dev_data(*args, **kwargs):
-        To handle device information data emitted from Cortex
-    on_new_met_data(*args, **kwargs):
-        To handle performance metrics data emitted from Cortex
-    on_new_pow_data(*args, **kwargs):
-        To handle band power data emitted from Cortex
     """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='User',
+                             blank=True, null=True, related_name='data')
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test',
+                             blank=True, null=True, related_name='data')
+
+
     def __init__(self):
         """
         Constructs cortex client and bind a function to handle subscribed data streams
@@ -58,21 +44,7 @@ class Subcribe():
 
     def sub(self, streams):
         """
-        To subscribe to one or more data streams
-        'eeg': EEG
-        'mot' : Motion
-        'dev' : Device information
-        'met' : Performance metric
-        'pow' : Band power
-
-        Parameters
-        ----------
-        streams : list, required
-            list of streams. For example, ['eeg', 'mot']
-
-        Returns
-        -------
-        None
+        To subscribe to eeg data streams
         """
         self.c.sub_request(streams)
 
@@ -110,19 +82,6 @@ class Subcribe():
         data = kwargs.get('data')
         print('eeg data: {}'.format(data))
 
-    def on_new_mot_data(self, *args, **kwargs):
-        """
-        To handle motion data emitted from Cortex
-
-        Returns
-        -------
-        data: dictionary
-             The values in the array motion match the labels in the array labels return at on_new_data_labels
-        For example: {'mot': [33, 0, 0.493859, 0.40625, 0.46875, -0.609375, 0.968765, 0.187503, -0.250004, -76.563667, -19.584995, 38.281834], 'time': 1627457508.2588}
-        """
-        data = kwargs.get('data')
-        print('motion data: {}'.format(data))
-
     def on_new_dev_data(self, *args, **kwargs):
         """
         To handle dev data emitted from Cortex
@@ -135,19 +94,6 @@ class Subcribe():
         """
         data = kwargs.get('data')
         print('dev data: {}'.format(data))
-
-    def on_new_met_data(self, *args, **kwargs):
-        """
-        To handle performance metrics data emitted from Cortex
-
-        Returns
-        -------
-        data: dictionary
-             The values in the array met match the labels in the array labels return at on_new_data_labels
-        For example: {'met': [True, 0.5, True, 0.5, 0.0, True, 0.5, True, 0.5, True, 0.5, True, 0.5], 'time': 1627459390.4229}
-        """
-        data = kwargs.get('data')
-        print('pm data: {}'.format(data))
 
     def on_new_pow_data(self, *args, **kwargs):
         """
@@ -198,18 +144,23 @@ user = {
     "debit": 100
 }
 
-
-
-s = Subcribe()
-
-# Do prepare steps
-s.do_prepare_steps()
-
-# sub multiple streams
-# streams = ['eeg','mot','met','pow']
-
-# or only sub for eeg
-streams = ['eeg']
-
-s.sub(streams)
+# s = Subcribe()
+#
+# # Do prepare steps
+# s.do_prepare_steps()
+#
+# # sub multiple streams
+# # streams = ['eeg','mot','met','pow']
+#
+# # or only sub for eeg
+# streams = ['eeg']
+#
+# s.sub(streams)
 # -----------------------------------------------------------
+
+def start():
+    s = Subcribe()
+    s.do_prepare_steps()
+    streams = ['eeg']
+    s.sub(streams)
+    return

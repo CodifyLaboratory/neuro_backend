@@ -1,5 +1,8 @@
-from rest_framework.decorators import api_view
+import json
+from rest_framework import views
+from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -7,7 +10,10 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from .models import Test, StimuliCategory, Stimuli, TestResult
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
-    TestResultDetailSerializer
+    TestResultDetailSerializer, HeadsetSerializer
+
+from .cortex import Cortex
+
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -91,11 +97,77 @@ class TestResultViewSet(ModelViewSet):
             raise PermissionDenied
 
 
+# class HeadsetView(views.APIView):
+#
+#     def post(self, request):
+#         yourdata= [{"likes": 10, "comments": 0}, {"likes": 4, "comments": 23}]
+#         results = YourSerializer(yourdata).data
+#         return Response(results)
+# @api_view()
+# def get_headset(request):
+#     from .example_epoc_plus import EEG
+#     print(EEG().get_headset())
+#     if EEG().get_headset() == 1:
+#         return Response('Headset yes.', status=200)
+#     else:
+#         return Response('Headset no.', status=404)
+
+@api_view()
+def start(request):
+    from .sub_data import start
+    try:
+        start()
+        return 200
+    except:
+        return 400
+
+user = {
+    "license": "26f60052-0070-4b35-9ed8-fec4363edfc6",
+    "client_id": "N0mvmXCzhTLbYNVYDkAMmrUf5WK1YlvPA7D0ujZm",
+    "client_secret": "3KVc00v5obtcBzo96moG0wjdEjJ8bNjsgeLl3VzGPbTMnp0woJPmB3dBbxOZ00V66XJTKHcWAeldMSbcvmVTQGGHLcPOSJZPWHweWnVvGUTu1b6a8NxlyWqLWrHf8WgA",
+    "debit": 100
+}
+
+@api_view()
+def info(request):
+    c = Cortex(user=user)
+    result = c.get_cortex_info()
+    return Response({
+        'id': result['id'],
+        'jsonrpc': result['jsonrpc']
+    })
+
 @api_view()
 def get_headset(request):
-    from .example_epoc_plus import EEG
-    print(EEG().get_headset())
-    if EEG().get_headset() == 1:
-        return Response('Headset yes.', status=200)
-    else:
-        return Response('Headset no.', status=404)
+    c = Cortex(user=user)
+    result = c.query_headset()
+    return Response({
+        'result': result,
+    })
+
+@api_view()
+def connect_headset(request):
+    serializer = HeadsetSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    c = Cortex(user=user)
+    print(serializer.data['headset'])
+    result = c.connect_headset(headset_id=serializer.data['headset'])
+    return Response({
+        'result': result,
+    })
+
+@api_view()
+def disconnect_headset(request):
+    serializer = HeadsetSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    c = Cortex(user=user)
+    print(serializer.data['headset'])
+    result = c.disconnect_headset(headset_id=serializer.data['headset'])
+    return Response({
+        'result': result,
+    })
+
+
+

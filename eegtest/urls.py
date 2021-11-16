@@ -1,6 +1,9 @@
 from django.urls import path
 
-from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, get_headset
+from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, get_headset, info, \
+    connect_headset, disconnect_headset
+
+
 
 urlpatterns = [
     # Categories
@@ -29,4 +32,10 @@ urlpatterns = [
 
     # Get headset
     path('headsets/', get_headset),
+    path('info/', info),
+    path('get-headset/', get_headset),
+    path('connect-headset/', connect_headset),
+    path('disconnect-headset/', disconnect_headset),
+
+
 ]

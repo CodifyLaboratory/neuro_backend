@@ -67,3 +67,18 @@ class TestResult(models.Model):
     def __str__(self):
         return self.title
 
+
+# class Data(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='User',
+#                              blank=True, null=True, related_name='results')
+#     data = models.TextField(verbose_name='Data')
+#     title = models.CharField(max_length=250, verbose_name='Stimuli category', blank=True, null=True)
+#
+#     class Meta:
+#         verbose_name = 'Stimuli category'
+#         verbose_name_plural = 'Stimuli categories'
+#
+#     def __str__(self):
+#         return self.title
+#
+#

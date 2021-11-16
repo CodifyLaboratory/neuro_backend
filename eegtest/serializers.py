@@ -98,3 +98,11 @@ class TestResultDetailSerializer(serializers.ModelSerializer):
         model = TestResult
         fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status']
         read_only_fields = ['user', 'date']
+
+
+class HeadsetSerializer(serializers.Serializer):
+   headset = serializers.CharField(max_length=200)
+
+   def save(self):
+       headset = self.validated_data['headset']
+       return headset

@@ -407,7 +407,7 @@ class Cortex(Dispatcher):
 # -------------------------------------------------------------------
 # -------------------------------------------------------------------
 user = {
-    "license": config('LICENSE_ID'),
+    "license": "",
     "client_id": config('CLIENT_ID'),
     "client_secret": config('CLIENT_SECRET'),
     "debit": 100

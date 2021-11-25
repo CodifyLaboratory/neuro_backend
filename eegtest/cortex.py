@@ -406,11 +406,11 @@ class Cortex(Dispatcher):
 # -------------------------------------------------------------------
 # -------------------------------------------------------------------
 # -------------------------------------------------------------------
-user = {
-    "license": "",
-    "client_id": config('CLIENT_ID'),
-    "client_secret": config('CLIENT_SECRET'),
-    "debit": 100
-}
-
-c = Cortex(user=user)
+# user = {
+#     "license": "",
+#     "client_id": config('CLIENT_ID'),
+#     "client_secret": config('CLIENT_SECRET'),
+#     "debit": 100
+# }
+#
+# c = Cortex(user=user)

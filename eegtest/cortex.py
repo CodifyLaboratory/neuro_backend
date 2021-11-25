@@ -26,8 +26,8 @@ GET_USER_INFO = 15
 
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
-        url = "wss://localhost:6868"
-        self.ws = websocket.create_connection(url, sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
+        url = "wss://143.198.221.88:6868"
+        self.ws = websocket.create_connection(url, sslopt={"cert_reqs": ssl.CERT_NONE})
         self.user = user
         self.debug = debug_mode
 

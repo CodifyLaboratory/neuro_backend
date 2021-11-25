@@ -1,28 +1,28 @@
-import json
-import ssl
-
-from django.test import TestCase
-import websocket
-from websocket import create_connection
-
-ws = create_connection("wss://localhost:6868", sslopt={"cert_reqs": ssl.CERT_NONE})
-get_cortex_info_request = {
-    "jsonrpc": "2.0",
-    "method": "getCortexInfo",
-    "id": 100
-}
-ws.send(json.dumps(get_cortex_info_request))
-result = ws.recv()
-print(json.dumps(json.loads(result), indent=4))
-# print(result)
-# ws.close()
-
+# import json
+# import ssl
+#
+# from django.test import TestCase
 # import websocket
+# from websocket import create_connection
 #
+# ws = create_connection("wss://localhost:6868", sslopt={"cert_reqs": ssl.CERT_NONE})
+# get_cortex_info_request = {
+#     "jsonrpc": "2.0",
+#     "method": "getCortexInfo",
+#     "id": 100
+# }
+# ws.send(json.dumps(get_cortex_info_request))
+# result = ws.recv()
+# print(json.dumps(json.loads(result), indent=4))
+# # print(result)
+# # ws.close()
 #
-# def on_message(wsapp, message):
-#     print(message)
-#
-#
-# wsapp = websocket.WebSocketApp("wss://localhost:6868", on_message=on_message)
-# wsapp.run_forever()
+# # import websocket
+# #
+# #
+# # def on_message(wsapp, message):
+# #     print(message)
+# #
+# #
+# # wsapp = websocket.WebSocketApp("wss://localhost:6868", on_message=on_message)
+# # wsapp.run_forever()

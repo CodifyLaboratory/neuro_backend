@@ -84,6 +84,7 @@ class StimuliDetailSerializer(serializers.ModelSerializer):
 class TestResultSerializer(serializers.ModelSerializer):
     test = serializers.PrimaryKeyRelatedField(read_only=True)
 
+
     class Meta:
         model = TestResult
         fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status']
@@ -106,3 +107,43 @@ class HeadsetSerializer(serializers.Serializer):
    def save(self):
        headset = self.validated_data['headset']
        return headset
+
+
+class GetUserSerializer(serializers.Serializer):
+   cortex_token = serializers.CharField(min_length=20)
+
+   def save(self):
+       cortex_token = self.validated_data['cortex_token']
+       return cortex_token
+
+
+class CreateSessionSerializer(serializers.Serializer):
+   cortex_token = serializers.CharField(min_length=20)
+   headset = serializers.CharField(max_length=200)
+   record_name = serializers.CharField(max_length=200)
+
+   def save(self):
+       cortex_token = self.validated_data['cortex_token']
+       headset = self.validated_data['headset']
+       record_name = self.validated_data['record_name']
+       return cortex_token, headset, record_name
+
+
+class CloseSessionSerializer(serializers.Serializer):
+   cortex_token = serializers.CharField(min_length=20)
+   session_id = serializers.CharField(min_length=20)
+
+   def save(self):
+       cortex_token = self.validated_data['cortex_token']
+       session_id = self.validated_data['session_id']
+       return cortex_token, session_id
+
+
+class SubscribeDataSerializer(serializers.Serializer):
+   cortex_token = serializers.CharField(min_length=20)
+   session_id = serializers.CharField(min_length=20)
+
+   def save(self):
+       cortex_token = self.validated_data['cortex_token']
+       session_id = self.validated_data['session_id']
+       return cortex_token, session_id

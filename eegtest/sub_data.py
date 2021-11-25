@@ -68,19 +68,6 @@ class Subcribe(models.Model):
         stream_labels = data['labels']
         print('{} labels are : {}'.format(stream_name, stream_labels))
 
-    def on_new_eeg_data(self, *args, **kwargs):
-        """
-        To handle eeg data emitted from Cortex
-
-        Returns
-        -------
-        data: dictionary
-             The values in the array eeg match the labels in the array labels return at on_new_data_labels
-        For example:
-           {'eeg': [99, 0, 4291.795, 4371.795, 4078.461, 4036.41, 4231.795, 0.0, 0], 'time': 1627457774.5166}
-        """
-        data = kwargs.get('data')
-        print('eeg data: {}'.format(data))
 
     def on_new_dev_data(self, *args, **kwargs):
         """
@@ -158,9 +145,8 @@ user = {
 # s.sub(streams)
 # -----------------------------------------------------------
 
-def start():
-    s = Subcribe()
-    s.do_prepare_steps()
-    streams = ['eeg']
-    s.sub(streams)
-    return
+# def start():
+#     s = Subcribe()
+#     s.do_prepare_steps()
+#     streams = ['eeg']
+#     s.sub(streams)

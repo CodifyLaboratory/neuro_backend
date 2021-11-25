@@ -1,9 +1,8 @@
 from django.urls import path
 
 from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, get_headset, info, \
-    connect_headset, disconnect_headset
-
-
+    connect_headset, disconnect_headset, request_access, authorize, get_user_info, create_session, close_session, \
+    get_session
 
 urlpatterns = [
     # Categories
@@ -36,6 +35,13 @@ urlpatterns = [
     path('get-headset/', get_headset),
     path('connect-headset/', connect_headset),
     path('disconnect-headset/', disconnect_headset),
+    path('request-access/', request_access),
+    path('get-cortex-token/', authorize),
+    path('get-user-info/', get_user_info),
+    path('create-session/', create_session),
+    path('close-session/', close_session),
+    # path('subscribe_data/', subscribe_request),
+    path('query-sessions/', get_session),
 
 
 ]

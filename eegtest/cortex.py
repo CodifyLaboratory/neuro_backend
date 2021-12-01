@@ -23,7 +23,7 @@ EXPORT_RECORD_ID = 13
 INJECT_MARKER_REQUEST_ID = 14
 GET_USER_INFO = 15
 
-url = "wss://localhost:6868"
+url = "wss://143.198.221.88:6868"
 
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):

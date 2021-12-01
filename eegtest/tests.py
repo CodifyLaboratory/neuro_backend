@@ -27,18 +27,29 @@
 # # wsapp = websocket.WebSocketApp("wss://localhost:6868", on_message=on_message)
 # # wsapp.run_forever()
 import json
+# import websocket
+# import ssl
+#
+# websocket.enableTrace(True)
+# ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
+# ws.connect("wss://localhost:6868")
+# get_cortex_info_request = {
+#             "jsonrpc": "2.0",
+#             "method": "getCortexInfo",
+#             "id": 100
+#         }
+# ws.send(json.dumps(get_cortex_info_request))
+# print(ws.recv())
+# ws.close()
 
-import websocket
-import ssl
 
-websocket.enableTrace(True)
-ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
-ws.connect("wss://localhost:6868")
-get_cortex_info_request = {
-            "jsonrpc": "2.0",
-            "method": "getCortexInfo",
-            "id": 100
-        }
-ws.send(json.dumps(get_cortex_info_request))
-print(ws.recv())
-ws.close()
+
+import asyncio
+import websockets
+
+async def hello():
+    async with websockets.connect("ws://localhost:8765") as websocket:
+        await websocket.send("Hello world!")
+        await websocket.recv()
+
+asyncio.run(hello())

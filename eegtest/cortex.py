@@ -51,8 +51,8 @@ class Cortex(Dispatcher):
             "method": "queryHeadsets",
             "params": {}
         }
-        ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
-        ws.connect(url=url)
+        ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
+        ws.connect(url=url, http_proxy_host="143.198.221.88", http_proxy_port="80", proxy_type="http")
         ws.send(json.dumps(query_headset_request, indent=4))
         result = ws.recv()
         result_dic = json.loads(result)

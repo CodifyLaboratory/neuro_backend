@@ -25,11 +25,6 @@ GET_USER_INFO = 15
 
 url = "wss://localhost:6868"
 
-if __name__ == "__main__":
-    url = "wss://localhost:6868"
-    ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
-    ws.connect("wss://127.0.0.1:6868")
-
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
         # url = "wss://localhost:6868"
@@ -57,7 +52,7 @@ class Cortex(Dispatcher):
             "params": {}
         }
         ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
-        ws.connect(url=url, ssl=ssl.CERT_NONE, http_proxy_host="143.198.221.88", http_proxy_port="80", proxy_type="http")
+        ws.connect(url=url)
         ws.send(json.dumps(query_headset_request, indent=4))
         result = ws.recv()
         result_dic = json.loads(result)

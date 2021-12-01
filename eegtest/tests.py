@@ -26,13 +26,14 @@
 # #
 # # wsapp = websocket.WebSocketApp("wss://localhost:6868", on_message=on_message)
 # # wsapp.run_forever()
+
 import json
 import websocket
 import ssl
 
 websocket.enableTrace(True)
-ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
-ws.connect("wss://localhost:6868")
+ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
+ws.connect("wss://127.0.0.1:6868", http_proxy_host="143.198.221.88", http_proxy_port="80", proxy_type="http")
 get_cortex_info_request = {
             "jsonrpc": "2.0",
             "method": "getCortexInfo",

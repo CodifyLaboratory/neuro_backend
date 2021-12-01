@@ -23,11 +23,13 @@ EXPORT_RECORD_ID = 13
 INJECT_MARKER_REQUEST_ID = 14
 GET_USER_INFO = 15
 
+url = "wss://143.198.221.88:6868"
 
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
-        url = "ws://143.198.221.88:6868"
-        self.ws = websocket.create_connection(url, sslopt={"cert_reqs": ssl.CERT_NONE})
+        # url = "wss://localhost:6868"
+        # web = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
+        # self.ws = web.connect(url)
         self.user = user
         self.debug = debug_mode
 
@@ -49,8 +51,10 @@ class Cortex(Dispatcher):
             "method": "queryHeadsets",
             "params": {}
         }
-        self.ws.send(json.dumps(query_headset_request, indent=4))
-        result = self.ws.recv()
+        ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
+        ws.connect(url=url)
+        ws.send(json.dumps(query_headset_request, indent=4))
+        result = ws.recv()
         result_dic = json.loads(result)
         return result_dic['result']
 

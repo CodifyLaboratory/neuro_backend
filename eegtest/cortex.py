@@ -22,13 +22,14 @@ STOP_RECORD_REQUEST_ID = 12
 EXPORT_RECORD_ID = 13
 INJECT_MARKER_REQUEST_ID = 14
 GET_USER_INFO = 15
-
+UNSUB_REQUEST_ID = 16
 
 
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
         url = "wss://localhost:6868"
-        ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
+        ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False,
+                                         "ssl_version": ssl.PROTOCOL_TLSv1})
         ws.connect(url=url)
         self.ws = ws
         self.user = user
@@ -197,6 +198,22 @@ class Cortex(Dispatcher):
         result_dic = json.loads(result)
         return result_dic
 
+    def unsubscribe_request(self, cortex_token, session_id):
+        unsub_request_json = {
+            "jsonrpc": "2.0",
+            "method": "unsubscribe",
+            "params": {
+                "cortexToken": cortex_token,
+                "session": session_id,
+                "streams": ['pow']
+            },
+            "id": UNSUB_REQUEST_ID
+        }
+        self.ws.send(json.dumps(unsub_request_json))
+        result = self.ws.recv()
+        result_dic = json.loads(result)
+        return result_dic
+
     def create_record(self, cortex_token, session_id, record_name):
         create_record_request = {
             "jsonrpc": "2.0",
@@ -254,7 +271,6 @@ class Cortex(Dispatcher):
         result = self.ws.recv()
         result_dic = json.loads(result)
         return result_dic
-
 
         # if result_dic.get('error') != None:
         #     print("subscribe get error: " + result_dic['error']['message'])
@@ -350,10 +366,6 @@ class Cortex(Dispatcher):
 
         result = self.ws.recv()
         result_dic = json.loads(result)
-
-
-
-
 
     def inject_marker_request(self, marker):
         print('inject marker --------------------------------')

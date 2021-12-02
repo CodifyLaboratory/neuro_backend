@@ -27,7 +27,7 @@ GET_USER_INFO = 15
 
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
-        url = "wss://localhost:6868"
+        url = "wss://neuroproject.home.kg:6868"
         ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
         ws.connect(url=url)
         self.ws = ws

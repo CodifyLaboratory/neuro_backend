@@ -32,8 +32,7 @@ class Cortex(Dispatcher):
         #                                  "ssl_version": ssl.PROTOCOL_TLSv1})
         # ws.connect(url=url)
         url = "wss://localhost:6868"
-        self.ws = websocket.create_connection(url=url, sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False,
-                                                               "ssl_version": ssl.PROTOCOL_TLSv1})
+        self.ws = websocket.create_connection(url=url, sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
         # self.ws = ws
         self.user = user
         self.debug = debug_mode

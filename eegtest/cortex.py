@@ -23,13 +23,14 @@ EXPORT_RECORD_ID = 13
 INJECT_MARKER_REQUEST_ID = 14
 GET_USER_INFO = 15
 
-url = "wss://143.198.221.88:6868"
+
 
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
-        # url = "wss://localhost:6868"
-        # web = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
-        # self.ws = web.connect(url)
+        url = "wss://localhost:6868"
+        ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
+        ws.connect(url=url)
+        self.ws = ws
         self.user = user
         self.debug = debug_mode
 
@@ -51,10 +52,8 @@ class Cortex(Dispatcher):
             "method": "queryHeadsets",
             "params": {}
         }
-        ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE})
-        ws.connect(url=url)
-        ws.send(json.dumps(query_headset_request, indent=4))
-        result = ws.recv()
+        self.ws.send(json.dumps(query_headset_request, indent=4))
+        result = self.ws.recv()
         result_dic = json.loads(result)
         return result_dic['result']
 
@@ -216,14 +215,13 @@ class Cortex(Dispatcher):
         result_dic = json.loads(result)
         return result_dic
 
-    def stop_record(self):
-        print('stop record --------------------------------')
+    def stop_record(self, cortex_token, session_id):
         stop_record_request = {
             "jsonrpc": "2.0",
             "method": "stopRecord",
             "params": {
-                "cortexToken": self.auth,
-                "session": self.session_id
+                "cortexToken": cortex_token,
+                "session": session_id,
             },
 
             "id": STOP_RECORD_REQUEST_ID
@@ -232,12 +230,30 @@ class Cortex(Dispatcher):
         self.ws.send(json.dumps(stop_record_request))
         result = self.ws.recv()
         result_dic = json.loads(result)
+        return result_dic
 
-        if self.debug:
-            print('stop request \n',
-                  json.dumps(stop_record_request, indent=4))
-            print('stop result \n',
-                  json.dumps(result_dic, indent=4))
+    def export_record(self, cortex_token, record_ids, folder):
+        export_record_request = {
+            "jsonrpc": "2.0",
+            "id": EXPORT_RECORD_ID,
+            "method": "exportRecord",
+            "params": {
+                "cortexToken": cortex_token,
+                "folder": folder,
+                "format": 'CSV',
+                "streamTypes": ['BP'],
+                "recordIds": record_ids,
+                "version": 'V2',
+            }
+        }
+
+        # if export_format == 'CSV':
+        #     export_record_request['params']['version'] = export_version
+
+        self.ws.send(json.dumps(export_record_request))
+        result = self.ws.recv()
+        result_dic = json.loads(result)
+        return result_dic
 
 
         # if result_dic.get('error') != None:
@@ -337,49 +353,7 @@ class Cortex(Dispatcher):
 
 
 
-    def export_record(self,
-                      folder,
-                      export_types,
-                      export_format,
-                      export_version,
-                      record_ids):
-        print('export record --------------------------------')
-        export_record_request = {
-            "jsonrpc": "2.0",
-            "id": EXPORT_RECORD_ID,
-            "method": "exportRecord",
-            "params": {
-                "cortexToken": self.auth,
-                "folder": folder,
-                "format": export_format,
-                "streamTypes": export_types,
-                "recordIds": record_ids
-            }
-        }
 
-        # "version": export_version,
-        if export_format == 'CSV':
-            export_record_request['params']['version'] = export_version
-
-        if self.debug:
-            print('export record request \n',
-                  json.dumps(export_record_request, indent=4))
-
-        self.ws.send(json.dumps(export_record_request))
-
-        # wait until export record completed
-        while True:
-            time.sleep(1)
-            result = self.ws.recv()
-            result_dic = json.loads(result)
-
-            if self.debug:
-                print('export record result \n',
-                      json.dumps(result_dic, indent=4))
-
-            if 'result' in result_dic:
-                if len(result_dic['result']['success']) > 0:
-                    break
 
     def inject_marker_request(self, marker):
         print('inject marker --------------------------------')
@@ -405,16 +379,3 @@ class Cortex(Dispatcher):
             print('inject marker request \n', json.dumps(inject_marker_request, indent=4))
             print('inject marker result \n',
                   json.dumps(result_dic, indent=4))
-
-
-# -------------------------------------------------------------------
-# -------------------------------------------------------------------
-# -------------------------------------------------------------------
-# user = {
-#     "license": "",
-#     "client_id": config('CLIENT_ID'),
-#     "client_secret": config('CLIENT_SECRET'),
-#     "debit": 100
-# }
-#
-# c = Cortex(user=user)

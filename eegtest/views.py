@@ -1,21 +1,15 @@
-import json
 from decouple import config
-
-from rest_framework import views
-from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.renderers import BrowsableAPIRenderer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from .models import Test, StimuliCategory, Stimuli, TestResult
+from .cortex import Cortex
+from .models import Test, StimuliCategory, Stimulus, TestResult
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
-    TestResultDetailSerializer, HeadsetSerializer, GetUserSerializer, CreateSessionSerializer, CloseSessionSerializer, \
-    SubscribeDataSerializer
-
-from .cortex import Cortex
+    TestResultDetailSerializer, HeadsetSerializer, GetUserSerializer, CreateSessionSerializer, CloseSessionSerializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -54,7 +48,7 @@ class TestViewSet(ModelViewSet):
 
 class StimuliViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = Stimuli.objects.all()
+    queryset = Stimulus.objects.all()
 
     def perform_create(self, serializer):
         test = Test.objects.get(id=self.kwargs['pk'], status=True)
@@ -98,30 +92,75 @@ class TestResultViewSet(ModelViewSet):
             raise PermissionDenied
 
 
-# class HeadsetView(views.APIView):
-#
-#     def post(self, request):
-#         yourdata= [{"likes": 10, "comments": 0}, {"likes": 4, "comments": 23}]
-#         results = YourSerializer(yourdata).data
-#         return Response(results)
-# @api_view()
-# def get_headset(request):
-#     from .example_epoc_plus import EEG
-#     print(EEG().get_headset())
-#     if EEG().get_headset() == 1:
-#         return Response('Headset yes.', status=200)
-#     else:
-#         return Response('Headset no.', status=404)
+class TestSessionViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
 
-@api_view()
-def start(request):
-    from .sub_data import start
-    try:
-        start()
-        return 200
-    except:
-        return 400
+    def perform_create(self, serializer):
+        test = Test.objects.get(id=self.kwargs['pk'])
+        return serializer.save(user=self.request.user, test=test)
 
+    def get_queryset(self):
+        try:
+            if self.action == 'create' or self.action == 'update' or self.action == 'destroy' or self.action == 'retrieve':
+                return TestResult.objects.all()
+            elif self.action == 'list' and self.request.user.is_professor:
+                return TestResult.objects.all()
+            elif self.action == 'list' and self.request.user.is_simple_user:
+                return TestResult.objects.filter(user=self.request.user, status=True)
+        except:
+            raise PermissionDenied
+
+    def get_serializer_class(self):
+        try:
+            if self.action == 'create' or self.action == 'update' or self.action == 'destroy':
+                return CreateSessionSerializer
+            # elif self.action == 'retrieve' or self.action == 'list':
+            #     return TestResultDetailSerializer
+        except:
+            raise PermissionDenied
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        cortex_token = request.data['cortex_token']
+        headset = request.data['headset']
+        record_name = request.data['title']
+        try:
+            c = Cortex(user=user)
+            session = c.create_session(cortex_token=cortex_token, headset=headset)
+            if 'result' in session:
+                stream = c.subscribe_request(cortex_token=cortex_token, session_id=session['result']['id'])
+                if 'result' in stream:
+                    record = c.create_record(cortex_token=cortex_token, session_id=session['result']['id'],
+                                             record_name=record_name)
+                    if 'result' in record:
+                        c.stop_record(cortex_token=cortex_token, session_id=session['result']['id'])
+                        c.disconnect_headset(headset_id=headset)
+                        print(record['result']['uuid'])
+                        export = c.export_record(cortex_token=cortex_token, record_ids=record['result']['uuid'],
+                                                 folder='/media/results/')
+                        print(export)
+                        if 'result' in export:
+                            serializer.save()
+                            return serializer
+                        else:
+                            return Response({
+                                'error': export['error']['message'],
+                            }, 400)
+                    else:
+                        return Response({
+                            'error': record['error']['message'],
+                        }, 400)
+                else:
+                    return Response({
+                        'error': stream['error']['message'],
+                    }, 400)
+            else:
+                return Response({
+                    'error': session['error']['message'],
+                }, 400)
+        except:
+            return Response(serializer.errors, 400)
 
 user = {
     "license": "",
@@ -129,6 +168,13 @@ user = {
     "client_secret": config('CLIENT_SECRET'),
     "debit": 100
 }
+
+
+@api_view()
+def create_session(request):
+    serializer = CreateSessionSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
 
 
 @api_view()
@@ -205,21 +251,6 @@ def disconnect_headset(request):
 
 
 @api_view()
-def create_session(request):
-    serializer = CreateSessionSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    c = Cortex(user=user)
-    session = c.create_session(cortex_token=serializer.data['cortex_token'], headset=serializer.data['headset'])
-    stream = c.subscribe_request(cortex_token=serializer.data['cortex_token'], session_id=session['result']['id'])
-    record = c.create_record(cortex_token=serializer.data['cortex_token'], session_id=session['result']['id'],
-                             record_name=serializer.data['record_name'])
-    return Response({
-        'result': session,
-    })
-
-
-@api_view()
 def close_session(request):
     serializer = CloseSessionSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -230,6 +261,7 @@ def close_session(request):
     return Response({
         'result': result,
     })
+
 
 # @api_view()
 # def subscribe_request(request):

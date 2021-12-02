@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, get_headset, info, \
     connect_headset, disconnect_headset, request_access, authorize, get_user_info, create_session, close_session, \
-    get_session
+    get_session, TestSessionViewSet
 
 urlpatterns = [
     # Categories
@@ -24,6 +24,7 @@ urlpatterns = [
 
     # Test Results
     path('results/create/<int:pk>/', TestResultViewSet.as_view({'post': 'create'})),
+    path('sessions/create/<int:pk>/', TestSessionViewSet.as_view({'post': 'create'})),
     path('results/', TestResultViewSet.as_view({'get': 'list'})),
     path('results/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve'})),
     path('results/update/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve', 'put': 'update'})),

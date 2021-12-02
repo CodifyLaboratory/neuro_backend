@@ -28,8 +28,7 @@ UNSUB_REQUEST_ID = 16
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
         url = "wss://neuroproject.home.kg:6868"
-        ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False,
-                                         "ssl_version": ssl.PROTOCOL_TLSv1})
+        ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
         ws.connect(url=url)
         # ssl_context = ssl.create_default_context()
         # ssl_context.check_hostname = False

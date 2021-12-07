@@ -1,7 +1,6 @@
 import json
 import ssl
 import time
-
 import websocket
 from decouple import config
 from pydispatch import Dispatcher
@@ -27,14 +26,9 @@ UNSUB_REQUEST_ID = 16
 
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
-        url = "wss://2.tcp.ngrok.io:14892"
+        url = "wss://2.tcp.ngrok.io:18638"
         ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
         ws.connect(url=url)
-        # ssl_context = ssl.create_default_context()
-        # ssl_context.check_hostname = False
-        # ssl_context.verify_mode = ssl.CERT_NONE
-        # url = "wss://localhost:6868"
-        # self.ws = websocket.create_connection(url=url, ssl=ssl_context)
         self.ws = ws
         self.user = user
         self.debug = debug_mode
@@ -60,7 +54,7 @@ class Cortex(Dispatcher):
         self.ws.send(json.dumps(query_headset_request, indent=4))
         result = self.ws.recv()
         result_dic = json.loads(result)
-        return result_dic['result']
+        return result_dic
 
     def connect_headset(self, headset_id):
         connect_headset_request = {
@@ -150,6 +144,7 @@ class Cortex(Dispatcher):
             }
         }
         self.ws.send(json.dumps(create_session_request))
+        time.sleep(1)
         result = self.ws.recv()
         result_dic = json.loads(result)
         return result_dic
@@ -168,6 +163,7 @@ class Cortex(Dispatcher):
             }
         }
         self.ws.send(json.dumps(close_session_request))
+        time.sleep(1)
         result = self.ws.recv()
         result_dic = json.loads(result)
         return result_dic

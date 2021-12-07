@@ -27,7 +27,7 @@ UNSUB_REQUEST_ID = 16
 
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
-        url = "wss://neuroproject.home.kg:6868"
+        url = "wss://2.tcp.ngrok.io:14892"
         ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
         ws.connect(url=url)
         # ssl_context = ssl.create_default_context()
@@ -395,3 +395,5 @@ class Cortex(Dispatcher):
             print('inject marker request \n', json.dumps(inject_marker_request, indent=4))
             print('inject marker result \n',
                   json.dumps(result_dic, indent=4))
+
+c = Cortex

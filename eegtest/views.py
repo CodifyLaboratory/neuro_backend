@@ -1,5 +1,8 @@
+import json
+import ssl
 import time
 
+import websocket
 from decouple import config
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
@@ -12,7 +15,7 @@ from .models import Test, StimuliCategory, Stimulus, TestResult, CortexSessionMo
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, HeadsetSerializer, GetUserSerializer, CreateSessionSerializer, CloseSessionSerializer, \
-    ExportRecordSerializer, CortexClientSerializer
+    ExportRecordSerializer, CortexClientSerializer, CreateSession1Serializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -230,7 +233,8 @@ def get_user_info(request):
 
 @api_view()
 def info(request):
-    c.url = CortexSessionModel.objects.get(user=request.user).url
+    url = CortexSessionModel.objects.get(user=request.user).url
+    c.ws_connect(url)
     result = c.get_cortex_info()
     return Response({
         'id': result['id'],
@@ -261,6 +265,17 @@ def get_headset(request):
     return Response({
         'result': result['result']}, 200)
 
+
+# @api_view()
+# def get_headset(request):
+#     ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
+#         ws.connect(url=self.url)
+#     result = c.query_headset()
+#     if result['result'] == []:
+#         return Response({
+#             'result': result}, 404)
+#     return Response({
+#         'result': result['result']}, 200)
 
 @api_view()
 def connect_headset(request):
@@ -297,35 +312,89 @@ def create_record(request):
 
 @api_view()
 def create_session(request):
-    serializer = CreateSessionSerializer(data=request.data)
+    url = "wss://localhost:6868"
+    ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
+    ws.connect(url=url)
+    serializer = CreateSession1Serializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    result = c.create_session(cortex_token=serializer.data['cortex_token'], headset=serializer.data['headset'])
+    create_session_request = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "createSession",
+        "params": {
+            "cortexToken": serializer.data['cortex_token'],
+            "headset": serializer.data['headset'],
+            "status": "active"
+        }
+    }
+    ws.send(json.dumps(create_session_request))
+    time.sleep(1)
+    result = ws.recv()
+    result_dic = json.loads(result)
     return Response({
-        'result': result,
+        'result': result_dic,
     })
-
 
 @api_view()
 def close_session(request):
+    url = "wss://localhost:6868"
+    ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
+    ws.connect(url=url)
     serializer = CloseSessionSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    result = c.close_session(cortex_token=serializer.data['cortex_token'], session_id=serializer.data['session_id'])
+    close_session_request = {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "updateSession",
+        "params": {
+            "cortexToken": serializer.data['cortex_token'],
+            "session": serializer.data['session_id'],
+            "status": "close"
+        }
+    }
+    ws.send(json.dumps(close_session_request))
+    time.sleep(1)
+    result = ws.recv()
+    result_dic = json.loads(result)
     return Response({
-        'result': result,
+        'result': result_dic,
     })
+
+
+# @api_view()
+# def close_session(request):
+#     serializer = CloseSessionSerializer(data=request.data)
+#     serializer.is_valid(raise_exception=True)
+#     serializer.save()
+#     result = c.close_session(cortex_token=serializer.data['cortex_token'], session_id=serializer.data['session_id'])
+#     return Response({
+#         'result': result,
+#     })
 
 
 @api_view()
 def get_query_session(request):
+    url = "wss://localhost:6868"
+    ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
+    ws.connect(url=url)
     serializer = GetUserSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    result = c.get_session(cortex_token=serializer.data['cortex_token'])
-
+    query_session_request = {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "method": "querySessions",
+        "params": {
+            "cortexToken": serializer.data['cortex_token'],
+        }
+    }
+    ws.send(json.dumps(query_session_request))
+    result = ws.recv()
+    result_dic = json.loads(result)
     return Response({
-        'result': result,
+        'result': result_dic,
     })
 
 
@@ -375,15 +444,15 @@ def _stop_session(request):
 #         'result': result,
 #     })
 
-@api_view()
-def get_session(request):
-    serializer = GetUserSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    result = c.get_session(cortex_token=serializer.data['cortex_token'])
-    return Response({
-        'result': result,
-    })
+# @api_view()
+# def get_session(request):
+#     serializer = GetUserSerializer(data=request.data)
+#     serializer.is_valid(raise_exception=True)
+#     serializer.save()
+#     result = c.get_session(cortex_token=serializer.data['cortex_token'])
+#     return Response({
+#         'result': result,
+#     })
 
 
 @api_view()

@@ -20,7 +20,7 @@ class StimuliListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Stimulus
-        fields = ['id', 'index', 'test', 'category', 'title', 'description', 'duration', 'seconds', 'file']
+        fields = ['id', 'test', 'category', 'title', 'description', 'duration', 'seconds', 'file']
 
     def get_seconds(self, obj):
         return obj.duration.total_seconds()
@@ -32,7 +32,7 @@ class StimuliSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = Stimulus
-        fields = ['id', 'index', 'test', 'category', 'title', 'description', 'duration', 'file']
+        fields = ['id', 'test', 'category', 'title', 'description', 'duration', 'file']
 
 
 class TestSerializer(serializers.ModelSerializer):
@@ -76,7 +76,7 @@ class StimuliDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Stimulus
-        fields = ['id', 'index', 'test', 'category', 'title', 'description', 'duration', 'file']
+        fields = ['id', 'test', 'category', 'title', 'description', 'duration', 'file']
 
 
 class TestResultSerializer(serializers.ModelSerializer):
@@ -125,14 +125,14 @@ class CreateSessionSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'date']
 
 
-# class CreateSessionSerializer(serializers.Serializer):
-#     cortex_token = serializers.CharField(min_length=20)
-#     headset = serializers.CharField(max_length=200)
-#
-#     def save(self):
-#         cortex_token = self.validated_data['cortex_token']
-#         headset = self.validated_data['headset']
-#         return cortex_token, headset
+class CreateSession1Serializer(serializers.Serializer):
+    cortex_token = serializers.CharField(min_length=20)
+    headset = serializers.CharField(max_length=200)
+
+    def save(self):
+        cortex_token = self.validated_data['cortex_token']
+        headset = self.validated_data['headset']
+        return cortex_token, headset
 
 
 class CloseSessionSerializer(serializers.Serializer):

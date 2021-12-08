@@ -26,6 +26,12 @@ GET_USER_INFO = 15
 UNSUB_REQUEST_ID = 16
 
 
+
+class ConnectionStore:
+    def __init__(self):
+        self.__connections= {}
+
+
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
         self.url = "wss://2.tcp.ngrok.io:18638"
@@ -34,6 +40,14 @@ class Cortex(Dispatcher):
         self.ws = ws
         self.user = user
         self.debug = debug_mode
+
+    def ws_connect(self, url):
+        ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
+        ws.connect(url=url)
+        self.ws = ws
+        print(ws.sock)
+        print(ws.connected)
+        return ws
 
     def get_cortex_info(self):
         get_cortex_info_request = {

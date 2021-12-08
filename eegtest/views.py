@@ -259,7 +259,7 @@ def get_headset(request):
         return Response({
             'result': result}, 404)
     return Response({
-        'result': result}, 200)
+        'result': result['result']}, 200)
 
 
 @api_view()

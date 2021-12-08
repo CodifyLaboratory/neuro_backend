@@ -6,6 +6,8 @@ from decouple import config
 from pydispatch import Dispatcher
 
 # define request id
+from eegtest.models import CortexSessionModel
+
 QUERY_HEADSET_ID = 1
 CONNECT_HEADSET_ID = 2
 REQUEST_ACCESS_ID = 3
@@ -26,9 +28,9 @@ UNSUB_REQUEST_ID = 16
 
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
-        url = "wss://2.tcp.ngrok.io:18638"
+        self.url = "wss://2.tcp.ngrok.io:18638"
         ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
-        ws.connect(url=url)
+        ws.connect(url=self.url)
         self.ws = ws
         self.user = user
         self.debug = debug_mode

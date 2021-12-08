@@ -112,6 +112,10 @@ class CortexClientViewSet(ModelViewSet):
             raise PermissionDenied
 
 
+# def get_current_user(request):
+#     url = CortexSessionModel.objects.get(user=request.user).url
+#     return str(url)
+
 c = Cortex(user={"license": "",
                  "client_id": config('CLIENT_ID'),
                  "client_secret": config('CLIENT_SECRET'),
@@ -234,12 +238,22 @@ def info(request):
     })
 
 
+# @api_view()
+# def get_headset(request):
+#     try:
+#         c.url = CortexSessionModel.objects.get(user=request.user).url
+#         print(c.url)
+#     except:
+#         raise NotAuthenticated
+#     result = c.query_headset()
+#     if result['result'] == []:
+#         return Response({
+#             'result': result}, 404)
+#     return Response({
+#         'result': result}, 200)
+
 @api_view()
 def get_headset(request):
-    try:
-        c.url = CortexSessionModel.objects.get(user=request.user).url
-    except:
-        raise NotAuthenticated
     result = c.query_headset()
     if result['result'] == []:
         return Response({
@@ -250,25 +264,16 @@ def get_headset(request):
 
 @api_view()
 def connect_headset(request):
-    try:
-        c.url = CortexSessionModel.objects.get(user=request.user).url
-    except:
-        raise NotAuthenticated
     serializer = HeadsetSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
     result = c.connect_headset(headset_id=serializer.data['headset'])
     return Response({
-        'result': result,
-    })
+        'result': result}, 200)
 
 
 @api_view()
 def disconnect_headset(request):
-    try:
-        c.url = CortexSessionModel.objects.get(user=request.user).url
-    except:
-        raise NotAuthenticated
     serializer = HeadsetSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()

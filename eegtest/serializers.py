@@ -1,8 +1,9 @@
+from django.db.models import Sum
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
-from django.db.models import Sum
-from .models import Test, StimuliCategory, Stimulus, TestResult
+
 from user.serializers import UserListSerializer
+from .models import Test, StimuliCategory, Stimulus, TestResult, CortexSessionModel
 
 
 class StimuliCategorySerializer(serializers.ModelSerializer):
@@ -124,6 +125,16 @@ class CreateSessionSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'date']
 
 
+# class CreateSessionSerializer(serializers.Serializer):
+#     cortex_token = serializers.CharField(min_length=20)
+#     headset = serializers.CharField(max_length=200)
+#
+#     def save(self):
+#         cortex_token = self.validated_data['cortex_token']
+#         headset = self.validated_data['headset']
+#         return cortex_token, headset
+
+
 class CloseSessionSerializer(serializers.Serializer):
     cortex_token = serializers.CharField(min_length=20)
     session_id = serializers.CharField(min_length=20)
@@ -142,3 +153,23 @@ class SubscribeDataSerializer(serializers.Serializer):
         cortex_token = self.validated_data['cortex_token']
         session_id = self.validated_data['session_id']
         return cortex_token, session_id
+
+
+class ExportRecordSerializer(serializers.Serializer):
+    cortex_token = serializers.CharField(min_length=20)
+    record_ids = serializers.CharField(min_length=20)
+    folder = serializers.CharField(min_length=2)
+
+    def save(self):
+        cortex_token = self.validated_data['cortex_token']
+        record_ids = self.validated_data['record_ids']
+        folder = self.validated_data['folder']
+        return cortex_token, record_ids, folder
+
+
+class CortexClientSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = CortexSessionModel
+        fields = ['id', 'user', 'url']

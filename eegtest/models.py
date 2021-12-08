@@ -1,5 +1,7 @@
-from django.db import models
 from datetime import date
+
+from django.db import models
+
 from user.models import User
 
 
@@ -81,3 +83,8 @@ class TestResult(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class CortexSessionModel(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='User')
+    url = models.CharField(max_length=250, verbose_name='url')

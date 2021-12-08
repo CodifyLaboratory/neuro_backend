@@ -48,7 +48,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name='Date of Registration')
     is_staff = models.BooleanField(default=False, verbose_name='Staff')
     is_superuser = models.BooleanField(default=False, verbose_name='Super admin')
-    cortex_token = models.TextField(blank=True, null=True, verbose_name='Cortex token')
 
     USERNAME_FIELD = 'email'
 

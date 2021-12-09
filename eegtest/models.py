@@ -88,3 +88,9 @@ class TestResult(models.Model):
 class CortexSessionModel(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='User')
     url = models.CharField(max_length=250, verbose_name='url')
+
+# from .cortex_2 import Cortex
+#
+# class CortexUserModel(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='User')
+#     cortex = Cortex(user=user, )

@@ -53,8 +53,4 @@ urlpatterns = [
     path('cortex-url/update/<int:pk>/', CortexClientViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
     path('cortex-url/get/', CortexClientViewSet.as_view({'get': 'list'})),
 
-
-
-
-
 ]

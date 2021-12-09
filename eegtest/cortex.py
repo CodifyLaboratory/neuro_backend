@@ -34,7 +34,7 @@ class ConnectionStore:
 
 class Cortex(Dispatcher):
     def __init__(self, user, debug_mode=False):
-        self.url = "wss://2.tcp.ngrok.io:18638"
+        self.url = "wss://8.tcp.ngrok.io:12516"
         ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
         ws.connect(url=self.url)
         self.ws = ws

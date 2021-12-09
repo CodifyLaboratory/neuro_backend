@@ -2,7 +2,8 @@ from django.urls import path
 
 from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, get_headset, info, \
     connect_headset, disconnect_headset, request_access, authorize, get_user_info, create_session, close_session, \
-    get_session, export_record, _start_session, _stop_session, CortexClientViewSet, TestSessionViewSet
+    export_record, _start_session, _stop_session, CortexClientViewSet, TestSessionViewSet, \
+    get_query_session
 
 urlpatterns = [
     # Categories
@@ -42,7 +43,7 @@ urlpatterns = [
     path('create-session/', create_session),
     path('close-session/', close_session),
     # path('subscribe_data/', subscribe_request),
-    path('query-sessions/', get_session),
+    path('query-sessions/', get_query_session),
     path('export-record/', export_record),
     path('start-session/', _start_session),
     path('close-session/', _stop_session),

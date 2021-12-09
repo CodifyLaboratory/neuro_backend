@@ -170,15 +170,29 @@ class TestSessionViewSet(ModelViewSet):
                 'error': session['error']}, 400)
         session_id = session['result']['id']
         stream = c.subscribe_request(cortex_token=token, session_id=session_id)
-        name = User.objects.get(id=self.request.user.id).email
+        record_name = User.objects.get(id=self.request.user.id).email
         record = c.create_record(cortex_token=cortex_token, session_id=session_id,
-                                 record_name=name)
+                                 record_name=record_name)
         record_id = record['result']['record']['uuid']
         serializer.save()
         return Response({
             'session_id': session_id,
             'record_id': record_id,
         }, 201)
+
+
+@api_view()
+def stop_test(request):
+    serializer = CloseSessionSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    token = c.authorize()
+    cortex_token = token['result']['cortexToken']
+    record = c.stop_record(cortex_token=cortex_token, session_id=serializer.data['session_id'])
+    session = c.close_session(cortex_token=cortex_token, session_id=serializer.data['session_id'])
+    return Response({
+        'result': record,
+    })
 
 
 # time.sleep(6)

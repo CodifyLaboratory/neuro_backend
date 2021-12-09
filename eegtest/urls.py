@@ -3,7 +3,7 @@ from django.urls import path
 from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, get_headset, info, \
     connect_headset, disconnect_headset, request_access, authorize, get_user_info, create_session, close_session, \
     export_record, _start_session, _stop_session, CortexClientViewSet, TestSessionViewSet, \
-    get_query_session
+    get_query_session, stop_test
 
 urlpatterns = [
     # Categories
@@ -41,7 +41,7 @@ urlpatterns = [
     path('get-cortex-token/', authorize),
     path('get-user-info/', get_user_info),
     path('create-session/', create_session),
-    path('close-session/', close_session),
+    path('stop-session/', stop_test),
     # path('subscribe_data/', subscribe_request),
     path('query-sessions/', get_query_session),
     path('export-record/', export_record),

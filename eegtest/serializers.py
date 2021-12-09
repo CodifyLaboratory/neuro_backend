@@ -136,13 +136,11 @@ class CreateSession1Serializer(serializers.Serializer):
 
 
 class CloseSessionSerializer(serializers.Serializer):
-    cortex_token = serializers.CharField(min_length=20)
     session_id = serializers.CharField(min_length=20)
 
     def save(self):
-        cortex_token = self.validated_data['cortex_token']
         session_id = self.validated_data['session_id']
-        return cortex_token, session_id
+        return session_id
 
 
 class SubscribeDataSerializer(serializers.Serializer):

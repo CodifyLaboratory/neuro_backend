@@ -1,23 +1,16 @@
-import json
-import ssl
-import time
-
-import websocket
-from decouple import config
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from .cortex import Cortex
+from user.models import User
+from .connection import ws_connections
 from .models import Test, StimuliCategory, Stimulus, TestResult, CortexSessionModel, CortexObjectModel
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, HeadsetSerializer, GetUserSerializer, CreateSessionSerializer, CloseSessionSerializer, \
     ExportRecordSerializer, CortexClientSerializer, CreateSession1Serializer
-from .connection import ws_connections
-from user.models import User
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):

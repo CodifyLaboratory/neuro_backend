@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, get_headset, info, \
-    connect_headset, disconnect_headset, request_access, authorize, get_user_info, create_session, close_session, \
-    export_record, _start_session, _stop_session, CortexClientViewSet, TestSessionViewSet, \
+from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, get_headset, \
+    connect_headset, disconnect_headset, authorize, create_session, close_session, \
+    export_record, CortexClientViewSet, TestSessionViewSet, \
     get_query_session, stop_test
 
 urlpatterns = [
@@ -33,20 +33,23 @@ urlpatterns = [
 
     # Get headset
     path('headsets/', get_headset),
-    path('info/', info),
     path('get-headset/', get_headset),
     path('connect-headset/', connect_headset),
     path('disconnect-headset/', disconnect_headset),
-    path('request-access/', request_access),
+
     path('get-cortex-token/', authorize),
-    path('get-user-info/', get_user_info),
+
     path('create-session/', create_session),
-    path('stop-session/', stop_test),
-    # path('subscribe_data/', subscribe_request),
+    path('close-session/', close_session),
     path('query-sessions/', get_query_session),
+
+    path('stop-session/', stop_test),
+
+    # path('subscribe_data/', subscribe_request),
+
     path('export-record/', export_record),
-    path('start-session/', _start_session),
-    path('close-session/', _stop_session),
+    # path('start-session/', _start_session),
+    # path('close-session/', _stop_session),
 
     #Cortex Client URL
     path('cortex-url/create/', CortexClientViewSet.as_view({'post': 'create'})),

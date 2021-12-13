@@ -7,8 +7,9 @@ import websocket
 from decouple import config
 from django.db import models
 
-from .connection import ws_connections
+from .connection import ws_connections, Ngrok
 from user.models import User
+from pyngrok import ngrok, conf
 
 
 class Test(models.Model):
@@ -57,19 +58,42 @@ class Stimulus(models.Model):
 
 
 class Parameter(models.Model):
-    stimulus = models.ForeignKey(Stimulus, on_delete=models.CASCADE, verbose_name='Stimulus',
-                                 blank=True, null=True, related_name='parameters')
-    fa1 = models.FloatField(verbose_name='Frontal Asymmetry 1', blank=True, null=True)
-    fa2 = models.TextField(verbose_name='Frontal Asymmetry 2', blank=True, null=True)
-    tar = models.DurationField(verbose_name='TAR', blank=True, null=True)
-    coh = models.FileField(verbose_name='Coherence', blank=True, null=True)
+    title = models.CharField(max_length=250, verbose_name='Parameter', blank=True, null=True)
 
     class Meta:
-        verbose_name = 'Stimuli'
-        verbose_name_plural = 'Stimulus'
+        verbose_name = 'Parameter'
+        verbose_name_plural = 'Parameters'
 
     def __str__(self):
-        return '{}'.format(self.stimulus)
+        return self.title
+
+
+class Calculation(models.Model):
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test',
+                             blank=True, null=True, related_name='calculations')
+    parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE, verbose_name='Parameter',
+                                  blank=True, null=True, related_name='calculations')
+
+    class Meta:
+        verbose_name = 'Calculation'
+        verbose_name_plural = 'Calculations'
+
+    def __str__(self):
+        return '{}'.format(self.test)
+
+
+class StimuliGroup(models.Model):
+    calculation = models.ForeignKey(Calculation, on_delete=models.CASCADE, verbose_name='Calculation',
+                                         blank=True, null=True, related_name='stimuli_groups')
+    stimuli = models.ManyToManyField(Stimulus, verbose_name='Stimulus', blank=True, null=True, related_name='stimuli_groups')
+
+
+    class Meta:
+        verbose_name = 'Stimuli Groups'
+        verbose_name_plural = 'Stimuli Groups'
+
+    def __str__(self):
+        return '{}'.format(self.calculation)
 
 
 class TestResult(models.Model):
@@ -82,6 +106,7 @@ class TestResult(models.Model):
     file = models.FileField(verbose_name='File', blank=True, null=True)
     date = models.DateField(verbose_name='Date of creation', default=date.today)
     status = models.BooleanField(verbose_name='Status', default=False)
+    parameter = models.BooleanField(verbose_name='Status', default=False)
 
     class Meta:
         verbose_name = 'Test result'
@@ -98,9 +123,11 @@ class CortexSessionModel(models.Model):
 
 class CortexObjectModel(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='User')
-    url = models.CharField(max_length=250, verbose_name='Websocket URL')
+    url = models.CharField(max_length=250, verbose_name='Websocket URL', blank=True, null=True)
     client_id = models.CharField(max_length=250, verbose_name='Cortex Client ID', default=config('CLIENT_ID'))
-    client_secret = models.CharField(max_length=250, verbose_name='Cortex Client Secret', default=config('CLIENT_SECRET'))
+    client_secret = models.CharField(max_length=250, verbose_name='Cortex Client Secret',
+                                     default=config('CLIENT_SECRET'))
+    ngrok_token = models.CharField(max_length=250, verbose_name='Ngrok Access Token', default=config('NGROK_TOKEN'))
 
     class Meta:
         verbose_name = 'Cortex Object'
@@ -109,12 +136,22 @@ class CortexObjectModel(models.Model):
     def __str__(self):
         return '{}'.format(self.user)
 
+    def generate_tcp_url(self):
+        ngrok.kill(pyngrok_config=conf.get_default())
+        conf.get_default().auth_token = self.ngrok_token
+        tcp_tunnel = ngrok.connect(port=6868, proto='tcp')
+        self.url = tcp_tunnel.public_url[6:]
+        # ngrok_process = ngrok.get_ngrok_process()
+        # ngrok_process.proc.wait()
+        return self.url
+
     def _ws_connection(self):
         ws = websocket.WebSocket(sslopt={"cert_reqs": ssl.CERT_NONE, "check_hostname": False})
         ws.connect(url=self.url)
+        print(self.url)
         user = self.user
         ws_connections[user.id] = ws
-        return ws
+        return ws.connected
 
     # CORTEX AUTH
     def authorize(self, ws):

@@ -3,7 +3,8 @@ from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from user.serializers import UserListSerializer
-from .models import Test, StimuliCategory, Stimulus, TestResult, CortexSessionModel
+from .models import Test, StimuliCategory, Stimulus, TestResult, CortexSessionModel, Parameter, Calculation, \
+    StimuliGroup
 
 
 class StimuliCategorySerializer(serializers.ModelSerializer):
@@ -77,6 +78,48 @@ class StimuliDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stimulus
         fields = ['id', 'test', 'category', 'title', 'description', 'duration', 'file']
+
+
+class ParameterListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Parameter
+        fields = ['id', 'title']
+
+
+class StimuliGroupListSerializer(serializers.ModelSerializer):
+    calculation = serializers.PrimaryKeyRelatedField(read_only=True)
+    stimuli = StimuliListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = StimuliGroup
+        fields = ['id', 'calculation', 'stimuli']
+
+
+class StimuliGroupSerializer(WritableNestedModelSerializer):
+    calculation = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = StimuliGroup
+        fields = ['id', 'calculation', 'stimuli']
+
+
+class CalculationSerializer(WritableNestedModelSerializer):
+    stimuli_groups = StimuliGroupSerializer(many=True)
+    test = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Calculation
+        fields = ['id', 'test', 'parameter', 'stimuli_groups']
+
+
+class CalculationListSerializer(WritableNestedModelSerializer):
+    stimuli_groups = StimuliGroupListSerializer(many=True, read_only=True)
+    test = TestListSerializer(many=False, read_only=True)
+    parameter = ParameterListSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Calculation
+        fields = ['id', 'test', 'parameter', 'stimuli_groups']
 
 
 class TestResultSerializer(serializers.ModelSerializer):

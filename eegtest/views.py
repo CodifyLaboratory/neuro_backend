@@ -6,17 +6,25 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from user.models import User
 from .connection import ws_connections
-from .models import Test, StimuliCategory, Stimulus, TestResult, CortexSessionModel, CortexObjectModel
+from .models import Test, StimuliCategory, Stimulus, TestResult, CortexSessionModel, CortexObjectModel, Parameter, \
+    Calculation
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, HeadsetSerializer, GetUserSerializer, CreateSessionSerializer, CloseSessionSerializer, \
-    ExportRecordSerializer, CortexClientSerializer, CreateSession1Serializer
+    ExportRecordSerializer, CortexClientSerializer, CreateSession1Serializer, ParameterListSerializer, \
+    CalculationSerializer, CalculationListSerializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     queryset = StimuliCategory.objects.all()
     serializer_class = StimuliCategorySerializer
+
+
+class ParameterViewSet(ReadOnlyModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = Parameter.objects.all()
+    serializer_class = ParameterListSerializer
 
 
 class TestViewSet(ModelViewSet):
@@ -91,6 +99,30 @@ class TestResultViewSet(ModelViewSet):
                 return TestResultDetailSerializer
         except:
             raise PermissionDenied
+
+
+class CalculationViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        test = Test.objects.get(id=self.kwargs['pk'])
+        return serializer.save(test=test)
+
+    def get_queryset(self):
+        try:
+            if self.action == 'create' or self.action == 'list':
+                return Calculation.objects.all()
+        except:
+            raise NotAuthenticated
+
+    def get_serializer_class(self):
+        try:
+            if self.action == 'create':
+                return CalculationSerializer
+            elif self.action == 'list':
+                return CalculationListSerializer
+        except:
+            raise NotAuthenticated
 
 
 class CortexClientViewSet(ModelViewSet):
@@ -190,6 +222,20 @@ def authorize(request):
     return Response({
         'result': result,
     })
+
+@api_view()
+def generate_ngrok_url(request):
+    cortex = CortexObjectModel.objects.get(user=request.user)
+    cortex.generate_tcp_url()
+    return Response({
+        'result': cortex.url}, 200)
+
+@api_view()
+def create_connection(request):
+    cortex = CortexObjectModel.objects.get(user=request.user)
+    cortex._ws_connection()
+    return Response({
+        'result': cortex.url}, 200)
 
 
 # GET QUERY HEADSETS

@@ -13,8 +13,8 @@ from pyngrok import ngrok, conf
 
 
 class Test(models.Model):
-    title = models.CharField(max_length=250, unique=True, verbose_name='Title', blank=True, null=True)
-    description = models.TextField(verbose_name='Description', blank=True, null=True)
+    title = models.CharField(max_length=250, unique=True, verbose_name='Title')
+    description = models.TextField(verbose_name='Description')
     status = models.BooleanField(verbose_name='Status', default=False)
 
     class Meta:
@@ -37,14 +37,12 @@ class StimuliCategory(models.Model):
 
 
 class Stimulus(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test',
-                             blank=True, null=True, related_name='stimulus')
-    category = models.ForeignKey(StimuliCategory, on_delete=models.CASCADE, verbose_name='Category',
-                                 blank=True, null=True)
-    title = models.CharField(max_length=250, verbose_name='Title', blank=True, null=True)
-    description = models.TextField(verbose_name='Description', blank=True, null=True)
-    duration = models.DurationField(verbose_name='Duration', blank=True, null=True)
-    file = models.FileField(verbose_name='File', blank=True, null=True)
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test', related_name='stimulus')
+    category = models.ForeignKey(StimuliCategory, on_delete=models.CASCADE, verbose_name='Category')
+    title = models.CharField(max_length=250, verbose_name='Title')
+    description = models.TextField(verbose_name='Description')
+    duration = models.DurationField(verbose_name='Duration')
+    file = models.FileField(verbose_name='File')
 
     class Meta:
         verbose_name = 'Stimuli'
@@ -70,9 +68,9 @@ class Parameter(models.Model):
 
 class Calculation(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test',
-                             blank=True, null=True, related_name='calculations')
+                             related_name='calculations')
     parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE, verbose_name='Parameter',
-                                  blank=True, null=True, related_name='calculations')
+                                  related_name='calculations')
 
     class Meta:
         verbose_name = 'Calculation'
@@ -84,9 +82,8 @@ class Calculation(models.Model):
 
 class StimuliGroup(models.Model):
     calculation = models.ForeignKey(Calculation, on_delete=models.CASCADE, verbose_name='Calculation',
-                                         blank=True, null=True, related_name='stimuli_groups')
-    stimuli = models.ManyToManyField(Stimulus, verbose_name='Stimulus', blank=True, null=True, related_name='stimuli_groups')
-
+                                    related_name='stimuli_groups')
+    stimuli = models.ManyToManyField(Stimulus, verbose_name='Stimulus', related_name='stimuli_groups')
 
     class Meta:
         verbose_name = 'Stimuli Groups'

@@ -94,7 +94,7 @@ class Calculation(models.Model):
 
 class StimuliGroup(models.Model):
     calculation = models.ForeignKey(Calculation, on_delete=models.CASCADE, verbose_name='Calculation',
-                                    related_name='stimuli_groups')
+                                    related_name='stimuli_groups', blank=True, null=True)
     stimuli = models.ManyToManyField(Stimulus, verbose_name='Stimulus', related_name='stimuli_groups')
 
     class Meta:

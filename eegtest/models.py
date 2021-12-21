@@ -14,7 +14,7 @@ from pyngrok import ngrok, conf
 
 class Test(models.Model):
     title = models.CharField(max_length=250, unique=True, verbose_name='Title')
-    description = models.TextField(verbose_name='Description')
+    description = models.TextField(verbose_name='Description', blank=True, null=True)
     status = models.BooleanField(verbose_name='Status', default=False)
 
     class Meta:
@@ -39,10 +39,10 @@ class StimuliCategory(models.Model):
 class Stimulus(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test', related_name='stimulus')
     category = models.ForeignKey(StimuliCategory, on_delete=models.CASCADE, verbose_name='Category')
-    title = models.CharField(max_length=250, verbose_name='Title')
-    description = models.TextField(verbose_name='Description')
-    duration = models.DurationField(verbose_name='Duration')
-    file = models.FileField(verbose_name='File')
+    title = models.CharField(max_length=250, verbose_name='Title', blank=True, null=True)
+    description = models.TextField(verbose_name='Description', blank=True, null=True)
+    duration = models.DurationField(verbose_name='Duration', blank=True, null=True)
+    file = models.FileField(verbose_name='File', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Stimuli'

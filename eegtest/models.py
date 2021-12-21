@@ -79,7 +79,7 @@ class Parameter(models.Model):
 
 class Calculation(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test',
-                             related_name='calculations')
+                             related_name='calculations', blank=True, null=True)
     parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE, verbose_name='Parameter',
                                   related_name='calculations', blank=True, null=True)
 

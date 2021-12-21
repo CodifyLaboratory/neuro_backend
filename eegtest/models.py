@@ -39,7 +39,8 @@ class StimuliCategory(models.Model):
 class Stimulus(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test', related_name='stimulus',
                              blank=True, null=True)
-    category = models.ForeignKey(StimuliCategory, on_delete=models.CASCADE, verbose_name='Category')
+    category = models.ForeignKey(StimuliCategory, on_delete=models.CASCADE, verbose_name='Category',
+                                 blank=True, null=True)
     title = models.CharField(max_length=250, verbose_name='Title', blank=True, null=True)
     description = models.TextField(verbose_name='Description', blank=True, null=True)
     duration = models.DurationField(verbose_name='Duration', blank=True, null=True)

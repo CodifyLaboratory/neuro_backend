@@ -44,8 +44,10 @@ class UserViewSet(ModelViewSet):
 
     def get_queryset(self):
         try:
-            if self.action == 'create' or self.action == 'list':
+            if self.action == 'create':
                 return User.objects.all()
+            elif self.action == 'list':
+                return User.objects.filter(is_simple_user=True)
             elif self.action == 'retrieve' or self.action == 'update' or self.action == 'destroy':
                 return User.objects.filter(pk=self.request.user.pk)
         except:
@@ -55,9 +57,9 @@ class UserViewSet(ModelViewSet):
         try:
             if self.action == 'create':
                 return UserCreateSerializer
-            elif self.action == 'retrieve' or self.action == 'list':
+            elif self.action == 'list':
                 return UserListSerializer
-            elif self.action == 'update' or self.action == 'destroy':
+            elif self.action == 'retrieve' or self.action == 'update' or self.action == 'destroy':
                 return UserSerializer
         except:
             raise PermissionDenied

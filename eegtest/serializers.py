@@ -45,7 +45,7 @@ class TestSerializer(serializers.ModelSerializer):
 class TestListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'description', 'status']
 
 
 class TestDetailSerializer(serializers.ModelSerializer):

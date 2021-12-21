@@ -13,7 +13,7 @@ from pyngrok import ngrok, conf
 
 
 class Test(models.Model):
-    title = models.CharField(max_length=250, unique=True, verbose_name='Title')
+    title = models.CharField(max_length=250, unique=True, verbose_name='Title', blank=True, null=True)
     description = models.TextField(verbose_name='Description', blank=True, null=True)
     status = models.BooleanField(verbose_name='Status', default=False)
 

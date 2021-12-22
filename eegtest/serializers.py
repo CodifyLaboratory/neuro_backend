@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from user.serializers import UserListSerializer
 from .models import Test, StimuliCategory, Stimulus, TestResult, CortexSessionModel, Parameter, Calculation, \
-    StimuliGroup
+    StimuliGroup, Operation
 
 
 class StimuliCategorySerializer(serializers.ModelSerializer):
@@ -86,6 +86,12 @@ class ParameterListSerializer(serializers.ModelSerializer):
         fields = ['id', 'title']
 
 
+class OperationListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Operation
+        fields = ['id', 'title']
+
+
 class StimuliGroupListSerializer(serializers.ModelSerializer):
     calculation = serializers.PrimaryKeyRelatedField(read_only=True)
     stimuli = StimuliListSerializer(many=True, read_only=True)
@@ -109,17 +115,18 @@ class CalculationSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = Calculation
-        fields = ['id', 'test', 'parameter', 'stimuli_groups']
+        fields = ['id', 'test', 'parameter', 'operation', 'stimuli_groups']
 
 
-class CalculationListSerializer(WritableNestedModelSerializer):
+class CalculationListSerializer(serializers.ModelSerializer):
     stimuli_groups = StimuliGroupListSerializer(many=True, read_only=True)
     test = TestListSerializer(many=False, read_only=True)
     parameter = ParameterListSerializer(many=False, read_only=True)
+    operation = OperationListSerializer(many=False, read_only=True)
 
     class Meta:
         model = Calculation
-        fields = ['id', 'test', 'parameter', 'stimuli_groups']
+        fields = ['id', 'test', 'parameter', 'operation', 'stimuli_groups']
 
 
 class TestResultSerializer(serializers.ModelSerializer):

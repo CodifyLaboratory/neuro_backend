@@ -3,12 +3,14 @@ from django.urls import path
 from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, get_headset, \
     connect_headset, disconnect_headset, authorize, create_session, close_session, \
     export_record, CortexClientViewSet, TestSessionViewSet, \
-    get_query_session, stop_test, generate_ngrok_url, create_connection, CalculationViewSet, ParameterViewSet
+    get_query_session, stop_test, generate_ngrok_url, create_connection, CalculationViewSet, ParameterViewSet, \
+    OperationViewSet
 
 urlpatterns = [
     # Categories and Parameters
     path('categories/', StimuliCategoryViewSet.as_view({'get': 'list'})),
     path('parameters/', ParameterViewSet.as_view({'get': 'list'})),
+    path('operations/', OperationViewSet.as_view({'get': 'list'})),
 
     # Tests
     path('tests/create/', TestViewSet.as_view({'post': 'create'})),
@@ -27,9 +29,9 @@ urlpatterns = [
     # Calculation
     path('calculations/create/<int:pk>/', CalculationViewSet.as_view({'post': 'create'})),
     path('calculations/', CalculationViewSet.as_view({'get': 'list'})),
-    # path('calculations/<int:pk>/', CalculationViewSet.as_view({'get': 'retrieve'})),
-    # path('calculations/update/<int:pk>/', CalculationViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
-    # path('calculations/delete/<int:pk>/', CalculationViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'})),
+    path('calculations/<int:pk>/', CalculationViewSet.as_view({'get': 'retrieve'})),
+    path('calculations/update/<int:pk>/', CalculationViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
+    path('calculations/delete/<int:pk>/', CalculationViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'})),
 
     # Test Results
     path('results/create/<int:pk>/', TestResultViewSet.as_view({'post': 'create'})),

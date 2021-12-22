@@ -7,12 +7,12 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from user.models import User
 from .connection import ws_connections
 from .models import Test, StimuliCategory, Stimulus, TestResult, CortexSessionModel, CortexObjectModel, Parameter, \
-    Calculation
+    Calculation, Operation
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, HeadsetSerializer, GetUserSerializer, CreateSessionSerializer, CloseSessionSerializer, \
     ExportRecordSerializer, CortexClientSerializer, CreateSession1Serializer, ParameterListSerializer, \
-    CalculationSerializer, CalculationListSerializer
+    CalculationSerializer, CalculationListSerializer, OperationListSerializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -25,6 +25,12 @@ class ParameterViewSet(ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
     queryset = Parameter.objects.all()
     serializer_class = ParameterListSerializer
+
+
+class OperationViewSet(ReadOnlyModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = Operation.objects.all()
+    serializer_class = OperationListSerializer
 
 
 class TestViewSet(ModelViewSet):
@@ -103,21 +109,15 @@ class TestResultViewSet(ModelViewSet):
 
 class CalculationViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
+    queryset = Calculation.objects.all()
 
     def perform_create(self, serializer):
         test = Test.objects.get(id=self.kwargs['pk'])
         return serializer.save(test=test)
 
-    def get_queryset(self):
-        try:
-            if self.action == 'create' or self.action == 'list':
-                return Calculation.objects.all()
-        except:
-            raise NotAuthenticated
-
     def get_serializer_class(self):
         try:
-            if self.action == 'create':
+            if self.action == 'create' or self.action == 'update' or self.action == 'delete' or self.action == 'retrieve':
                 return CalculationSerializer
             elif self.action == 'list':
                 return CalculationListSerializer

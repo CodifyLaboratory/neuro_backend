@@ -68,21 +68,23 @@ class Parameter(models.Model):
         return self.title
 
 
-# class Operation(models.Model):
-#     title = models.CharField(max_length=250, verbose_name='Operation', blank=True, null=True)
-#
-#     class Meta:
-#         verbose_name = 'Operation'
-#         verbose_name_plural = 'Operations'
-#
-#     def __str__(self):
-#         return self.title
+class Operation(models.Model):
+    title = models.CharField(max_length=250, verbose_name='Operation', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Operation'
+        verbose_name_plural = 'Operations'
+
+    def __str__(self):
+        return self.title
 
 
 class Calculation(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test',
                              related_name='calculations', blank=True, null=True)
     parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE, verbose_name='Parameter',
+                                  related_name='calculations', blank=True, null=True)
+    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, verbose_name='Operation',
                                   related_name='calculations', blank=True, null=True)
 
     class Meta:

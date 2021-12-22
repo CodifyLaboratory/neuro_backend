@@ -110,7 +110,7 @@ class StimuliGroupSerializer(WritableNestedModelSerializer):
 
 
 class CalculationSerializer(WritableNestedModelSerializer):
-    stimuli_groups = StimuliGroupSerializer(many=True)
+    stimuli_groups = StimuliGroupSerializer(many=True, required=False)
     test = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:

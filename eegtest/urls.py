@@ -27,7 +27,7 @@ urlpatterns = [
     path('stimulus/delete/<int:pk>/', StimuliViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'})),
 
     # Calculation
-    path('calculations/create/<int:pk>/', CalculationViewSet.as_view({'post': 'create'})),
+    # path('calculations/create/<int:pk>/', CalculationViewSet.as_view({'post': 'create'})),
     path('calculations/', CalculationViewSet.as_view({'get': 'list'})),
     path('calculations/<int:pk>/', CalculationViewSet.as_view({'get': 'retrieve'})),
     path('calculations/update/<int:pk>/', CalculationViewSet.as_view({'get': 'retrieve', 'put': 'update'})),

@@ -1,5 +1,6 @@
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import PermissionDenied, NotAuthenticated
+from rest_framework.exceptions import PermissionDenied, NotAuthenticated, NotFound
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -12,7 +13,7 @@ from .serializers import TestListSerializer, TestSerializer, StimuliCategorySeri
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, HeadsetSerializer, GetUserSerializer, CreateSessionSerializer, CloseSessionSerializer, \
     ExportRecordSerializer, CortexClientSerializer, CreateSession1Serializer, ParameterListSerializer, \
-    CalculationSerializer, CalculationListSerializer, OperationListSerializer
+    CalculationSerializer, CalculationListSerializer, OperationListSerializer, CalculationDetailSerializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -111,14 +112,16 @@ class CalculationViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Calculation.objects.all()
 
-    def perform_create(self, serializer):
-        test = Test.objects.get(id=self.kwargs['pk'])
-        return serializer.save(test=test)
+    def get_object(self, queryset=None):
+        obj = get_object_or_404(Calculation, test=self.kwargs['pk'])
+        return obj
 
     def get_serializer_class(self):
         try:
-            if self.action == 'create' or self.action == 'update' or self.action == 'delete' or self.action == 'retrieve':
+            if self.action == 'update' or self.action == 'delete':
                 return CalculationSerializer
+            elif self.action == 'retrieve':
+                return CalculationDetailSerializer
             elif self.action == 'list':
                 return CalculationListSerializer
         except:

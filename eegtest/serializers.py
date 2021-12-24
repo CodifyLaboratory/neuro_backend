@@ -109,8 +109,27 @@ class StimuliGroupSerializer(WritableNestedModelSerializer):
         fields = ['id', 'calculation', 'stimuli']
 
 
+class StimuliGroupDetailSerializer(WritableNestedModelSerializer):
+    calculation = serializers.PrimaryKeyRelatedField(read_only=True)
+    stimuli = StimuliListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = StimuliGroup
+        fields = ['id', 'calculation', 'stimuli']
+
+
 class CalculationSerializer(WritableNestedModelSerializer):
     stimuli_groups = StimuliGroupSerializer(many=True, required=False)
+    test = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Calculation
+        fields = ['id', 'test', 'parameter', 'operation', 'stimuli_groups']
+
+
+
+class CalculationDetailSerializer(WritableNestedModelSerializer):
+    stimuli_groups = StimuliGroupDetailSerializer(many=True, required=False)
     test = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:

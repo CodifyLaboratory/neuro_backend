@@ -7,12 +7,17 @@ class Ngrok:
     @staticmethod
     def generate_tcp_url():
         ngrok.kill(pyngrok_config=conf.get_default())
+        # tunnels = ngrok.get_tunnels()
+        # ngrok.disconnect(tunnels.public_url)
         conf.get_default().auth_token = '21uxf517CHEduSGSkO9MJczRJs5_3DHeSFoT7JutuvqR9JaC3'
         tcp_tunnel = ngrok.connect(port=6868, proto='tcp')
         ngrok_url = tcp_tunnel.public_url[6:]
-        ngrok_process = ngrok.get_ngrok_process()
-        ngrok_process.proc.wait()
-        return ngrok_url
+        try:
+            ngrok_process = ngrok.get_ngrok_process()
+            ngrok_process.proc.wait()
+            return ngrok_url
+        except:
+            return 'errors'
 
 
 # pyngrok_config = conf.get_default()
@@ -40,3 +45,5 @@ connection = {}
 #
 # print(ngrok_url)
 # print(_ws_connection())
+
+print(Ngrok.generate_tcp_url())

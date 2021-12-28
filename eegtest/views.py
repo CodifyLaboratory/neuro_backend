@@ -197,7 +197,7 @@ class TestSessionViewSet(ModelViewSet):
         }, 201)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def stop_test(request):
     cortex = CortexObjectModel.objects.get(user=request.user)
     if not ws_connections or ws_connections[request.user.id].connected == False:

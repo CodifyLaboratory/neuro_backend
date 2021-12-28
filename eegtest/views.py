@@ -219,9 +219,11 @@ def stop_test(request):
 @api_view()
 def authorize(request):
     cortex = CortexObjectModel.objects.get(user=request.user)
-    cortex._ws_connection()
+    print(ws_connections)
+    if not ws_connections or ws_connections[request.user.id].connected == False:
+        cortex._ws_connection()
     ws = ws_connections[request.user.id]
-    result = cortex._authorize(ws)
+    result = cortex.authorize(ws)
     return Response({
         'result': result,
     })
@@ -242,9 +244,10 @@ def create_connection(request):
 
 
 # GET QUERY HEADSETS
-@api_view()
+@api_view(['GET', 'POST'])
 def get_headset(request):
     cortex = CortexObjectModel.objects.get(user=request.user)
+    print(ws_connections)
     if not ws_connections or ws_connections[request.user.id].connected == False:
         cortex._ws_connection()
     ws = ws_connections[request.user.id]
@@ -256,7 +259,7 @@ def get_headset(request):
         'result': result['result']}, 200)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def connect_headset(request):
     cortex = CortexObjectModel.objects.get(user=request.user)
     if not ws_connections or ws_connections[request.user.id].connected == False:
@@ -270,7 +273,7 @@ def connect_headset(request):
         'result': result}, 200)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def disconnect_headset(request):
     cortex = CortexObjectModel.objects.get(user=request.user)
     if not ws_connections or ws_connections[request.user.id].connected == False:
@@ -285,7 +288,7 @@ def disconnect_headset(request):
     })
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def create_session(request):
     cortex = CortexObjectModel.objects.get(user=request.user)
     if not ws_connections or ws_connections[request.user.id].connected == False:
@@ -301,7 +304,7 @@ def create_session(request):
     })
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def close_session(request):
     cortex = CortexObjectModel.objects.get(user=request.user)
     if not ws_connections or ws_connections[request.user.id].connected == False:

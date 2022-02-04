@@ -166,7 +166,6 @@ class TestResultStimuliSerializer(WritableNestedModelSerializer):
 
 class TestResultSerializer(WritableNestedModelSerializer):
     test_results_stimulus = TestResultStimuliSerializer(many=True, required=False)
-    test = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = TestResult

@@ -1,6 +1,6 @@
 import asyncio
 from lib.cortex import Cortex
-
+from decouple import config
 
 async def do_stuff(cortex):
     # await cortex.inspectApi()
@@ -35,10 +35,22 @@ async def do_stuff(cortex):
         await cortex.close_session()
 
 
+user = {
+    "license": "",
+    "client_id": config('CLIENT_ID'),
+    "client_secret": config('CLIENT_SECRET'),
+    "debit": 100
+}
+
+
 def test():
     cortex = Cortex('./cortex_creds')
     asyncio.run(do_stuff(cortex))
     cortex.close()
+
+
+
+
 
 
 if __name__ == '__main__':

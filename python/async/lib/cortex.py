@@ -33,7 +33,7 @@ class CortexApiException(Exception):
 
 
 class Cortex(object):
-    CORTEX_URL = "wss://localhost:6868"
+    CORTEX_URL = "wss://0.tcp.ngrok.io:18303"
 
     def __init__(self, client_id_file_path):
         self.parse_client_id_file(client_id_file_path)
@@ -360,6 +360,7 @@ class Cortex(object):
                   'session': self.session_id,
                   'title': title}
         resp = await self.send_command('createRecord', **params)
+        print(resp)
         logger.debug(f"{__name__} resp:\n{resp}")
         return resp
 

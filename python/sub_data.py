@@ -1,44 +1,12 @@
 from cortex import Cortex
 
 class Subcribe():
-    """
-    A class to subscribe data stream.
 
-    Attributes
-    ----------
-    c : Cortex
-        Cortex communicate with Emotiv Cortex Service
-
-    Methods
-    -------
-    do_prepare_steps():
-        Do prepare steps before training.
-    sub(streams):
-        To subscribe to one or more data streams.
-    on_new_data_labels(*args, **kwargs):
-        To handle data labels of subscribed data 
-    on_new_eeg_data(*args, **kwargs):
-        To handle eeg data emitted from Cortex
-    on_new_mot_data(*args, **kwargs):
-        To handle motion data emitted from Cortex
-    on_new_dev_data(*args, **kwargs):
-        To handle device information data emitted from Cortex
-    on_new_met_data(*args, **kwargs):
-        To handle performance metrics data emitted from Cortex
-    on_new_pow_data(*args, **kwargs):
-        To handle band power data emitted from Cortex
-    """
     def __init__(self):
-        """
-        Constructs cortex client and bind a function to handle subscribed data streams
-        If you do not want to log request and response message , set debug_mode = False. The default is True
-        """
+
         self.c = Cortex(user, debug_mode=True)
         self.c.bind(new_data_labels=self.on_new_data_labels)
-        self.c.bind(new_eeg_data=self.on_new_eeg_data)
-        self.c.bind(new_mot_data=self.on_new_mot_data)
         self.c.bind(new_dev_data=self.on_new_dev_data)
-        self.c.bind(new_met_data=self.on_new_met_data)
         self.c.bind(new_pow_data=self.on_new_pow_data)
 
     def do_prepare_steps(self):
@@ -96,33 +64,6 @@ class Subcribe():
         stream_labels = data['labels']
         print('{} labels are : {}'.format(stream_name, stream_labels))
 
-    def on_new_eeg_data(self, *args, **kwargs):
-        """
-        To handle eeg data emitted from Cortex
-
-        Returns
-        -------
-        data: dictionary
-             The values in the array eeg match the labels in the array labels return at on_new_data_labels
-        For example:
-           {'eeg': [99, 0, 4291.795, 4371.795, 4078.461, 4036.41, 4231.795, 0.0, 0], 'time': 1627457774.5166}
-        """
-        data = kwargs.get('data')
-        print('eeg data: {}'.format(data))
-
-    def on_new_mot_data(self, *args, **kwargs):
-        """
-        To handle motion data emitted from Cortex
-
-        Returns
-        -------
-        data: dictionary
-             The values in the array motion match the labels in the array labels return at on_new_data_labels
-        For example: {'mot': [33, 0, 0.493859, 0.40625, 0.46875, -0.609375, 0.968765, 0.187503, -0.250004, -76.563667, -19.584995, 38.281834], 'time': 1627457508.2588}
-        """
-        data = kwargs.get('data')
-        print('motion data: {}'.format(data))
-
     def on_new_dev_data(self, *args, **kwargs):
         """
         To handle dev data emitted from Cortex
@@ -136,23 +77,9 @@ class Subcribe():
         data = kwargs.get('data')
         print('dev data: {}'.format(data))
 
-    def on_new_met_data(self, *args, **kwargs):
-        """
-        To handle performance metrics data emitted from Cortex
-
-        Returns
-        -------
-        data: dictionary
-             The values in the array met match the labels in the array labels return at on_new_data_labels
-        For example: {'met': [True, 0.5, True, 0.5, 0.0, True, 0.5, True, 0.5, True, 0.5, True, 0.5], 'time': 1627459390.4229}
-        """
-        data = kwargs.get('data')
-        print('pm data: {}'.format(data))
-
     def on_new_pow_data(self, *args, **kwargs):
         """
         To handle band power data emitted from Cortex
-
         Returns
         -------
         data: dictionary
@@ -163,53 +90,16 @@ class Subcribe():
         print('pow data: {}'.format(data))
 
 
-# -----------------------------------------------------------
-# 
-# SETTING
-#   - replace your license, client_id, client_secret to user dic
-#   - specify infor for record and export
-#   - connect your headset with dongle or bluetooth, you should saw headset on EmotivApp
-# SUBSCRIBE
-#     you need to folow steps:
-#         1) do_prepare_steps: for authorization, connect headset and create working session.
-#         2) sub(): to subscribe data, you can subscribe one stream or multiple streams
-# RESULT
-#   - the data labels will be retrieved at on_new_data_labels
-#   - the data will be retreived at on_new_[dataStream]_data
-# 
-# -----------------------------------------------------------
-
-"""
-    client_id, client_secret:
-    To get a client id and a client secret, you must connect to your Emotiv account on emotiv.com and create a Cortex app
-    To subscribe eeg you need to put a valid licese (PRO license)
-"""
-# user = {
-#     "license": "26f60052-0070-4b35-9ed8-fec4363edfc6",
-#     "client_id": "ZsMXJvVqaOR4Pq5QUY46Djw4wXNjni3MK4NBihh3",
-#     "client_secret": "7OwHHGELxD9tQLoo2J5g1kswqKcjkoD51XoX8qGcjBSytuqt3gtg9Yuq0f1KX6fRNzJIn3DVGZ3FNQ7WflfHSMvWr4YKhldprljskJBAFdHuo8xYpIgoEdlzZlMQzLS8",
-#     "debit": 100
-# }
-
 user = {
-    "license": "26f60052-0070-4b35-9ed8-fec4363edfc6",
-    "client_id": "N0mvmXCzhTLbYNVYDkAMmrUf5WK1YlvPA7D0ujZm",
-    "client_secret": "3KVc00v5obtcBzo96moG0wjdEjJ8bNjsgeLl3VzGPbTMnp0woJPmB3dBbxOZ00V66XJTKHcWAeldMSbcvmVTQGGHLcPOSJZPWHweWnVvGUTu1b6a8NxlyWqLWrHf8WgA",
+    "license": "",
+    "client_id": "ZsMXJvVqaOR4Pq5QUY46Djw4wXNjni3MK4NBihh3",
+    "client_secret": "7OwHHGELxD9tQLoo2J5g1kswqKcjkoD51XoX8qGcjBSytuqt3gtg9Yuq0f1KX6fRNzJIn3DVGZ3FNQ7WflfHSMvWr4YKhldprljskJBAFdHuo8xYpIgoEdlzZlMQzLS8",
     "debit": 100
 }
 
-
-
 s = Subcribe()
-
-# Do prepare steps
 s.do_prepare_steps()
-
-# sub multiple streams
-# streams = ['eeg','mot','met','pow']
-
-# or only sub for eeg
-streams = ['eeg']
+streams = ['pow']
 
 s.sub(streams)
 # -----------------------------------------------------------

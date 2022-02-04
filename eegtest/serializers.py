@@ -149,7 +149,7 @@ class CalculationListSerializer(serializers.ModelSerializer):
 
 class TestResultStimuliListSerializer(serializers.ModelSerializer):
     test_result = serializers.PrimaryKeyRelatedField(read_only=True)
-    stimuli = StimuliListSerializer(many=True, read_only=True)
+    stimuli = StimuliListSerializer(many=False, read_only=True)
 
     class Meta:
         model = TestResultStimuli

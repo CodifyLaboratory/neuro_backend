@@ -125,7 +125,7 @@ class TestResultStimuli(models.Model):
                                     related_name='test_results_stimulus', blank=True, null=True)
     stimuli = models.ForeignKey(Stimulus, on_delete=models.CASCADE, verbose_name='Stimulus',
                                 related_name='test_results_stimulus')
-    data = ArrayField(models.FloatField(), default=list)
+    pow = ArrayField(models.FloatField(), default=list)
 
     class Meta:
         verbose_name = 'Test Result Stimulus'

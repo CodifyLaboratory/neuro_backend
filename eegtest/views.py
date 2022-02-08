@@ -12,7 +12,7 @@ from .serializers import TestListSerializer, TestSerializer, StimuliCategorySeri
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, ParameterListSerializer, \
     CalculationSerializer, CalculationListSerializer, OperationListSerializer, CalculationDetailSerializer, \
-    TestResultListSerializer, TestResultFileSerializer
+    TestResultListSerializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):

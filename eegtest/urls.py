@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import TestViewSet, StimuliCategoryViewSet, StimuliViewSet, TestResultViewSet, \
-    CalculationViewSet, ParameterViewSet, OperationViewSet
+    CalculationViewSet, ParameterViewSet, OperationViewSet, TestResultFileViewSet
 
 urlpatterns = [
     # Categories and Parameters
@@ -35,4 +35,6 @@ urlpatterns = [
     path('results/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve'})),
     path('results/update/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
     path('results/delete/<int:pk>/', TestResultViewSet.as_view({'get': 'retrieve', 'delete': 'destroy'})),
+
+    path('results/export/<int:pk>/', TestResultFileViewSet.as_view({'get': 'retrieve'})),
 ]

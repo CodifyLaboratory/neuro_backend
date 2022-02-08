@@ -1,7 +1,10 @@
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
+
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from drf_renderer_xlsx.mixins import XLSXFileMixin
+from drf_renderer_xlsx.renderers import XLSXRenderer
 
 from .models import Test, StimuliCategory, Stimulus, TestResult, Parameter, \
     Calculation, Operation
@@ -9,7 +12,7 @@ from .serializers import TestListSerializer, TestSerializer, StimuliCategorySeri
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, ParameterListSerializer, \
     CalculationSerializer, CalculationListSerializer, OperationListSerializer, CalculationDetailSerializer, \
-    TestResultListSerializer
+    TestResultListSerializer, TestResultFileSerializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -94,6 +97,14 @@ class CalculationViewSet(ModelViewSet):
                 return CalculationListSerializer
         except:
             raise NotAuthenticated
+
+
+class TestResultFileViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
+    # permission_classes = [IsAuthenticated]
+    queryset = TestResult.objects.all()
+    serializer_class = TestResultDetailSerializer
+    renderer_classes = (XLSXRenderer,)
+    filename = 'my_export.xlsx'
 
 
 class TestResultViewSet(ModelViewSet):

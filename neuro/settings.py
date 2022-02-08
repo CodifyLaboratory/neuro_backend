@@ -167,6 +167,11 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DATE_FORMAT': '%d.%m.%Y',
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'drf_renderer_xlsx.renderers.XLSXRenderer',
+    ),
 }
 
 CORS_ORIGIN_ALLOW_ALL = True

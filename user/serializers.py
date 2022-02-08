@@ -111,6 +111,16 @@ class UserProfileListSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'first_name', 'last_name', 'gender', 'age', 'phone', 'country', 'city']
 
 
+class UserProfileDetailSerializer(serializers.ModelSerializer):
+    country = serializers.StringRelatedField()
+    city = serializers.StringRelatedField()
+    gender = serializers.StringRelatedField()
+
+    class Meta:
+        model = UserProfile
+        fields = ['first_name', 'last_name', 'gender', 'age', 'phone', 'country', 'city']
+
+
 class UserSerializer(WritableNestedModelSerializer):
     user_profile = UserProfileSerializer(required=False, many=False)
 
@@ -121,9 +131,9 @@ class UserSerializer(WritableNestedModelSerializer):
 
 
 class UserListSerializer(serializers.ModelSerializer):
-    user_profile = UserProfileListSerializer(required=False, many=False)
+    user_profile = UserProfileDetailSerializer(required=False, many=False)
 
     class Meta:
         model = User
         fields = [
-            'id', 'email', 'user_profile']
+            'email', 'user_profile']

@@ -148,12 +148,12 @@ class CalculationListSerializer(serializers.ModelSerializer):
 
 
 class TestResultStimuliListSerializer(serializers.ModelSerializer):
-    test_result = serializers.PrimaryKeyRelatedField(read_only=True)
-    stimuli = StimuliListSerializer(many=False, read_only=True)
+    # stimuli = StimuliListSerializer(many=False, read_only=True)
+    stimuli = serializers.StringRelatedField()
 
     class Meta:
         model = TestResultStimuli
-        fields = ['id', 'test_result', 'stimuli', 'pow']
+        fields = ['stimuli', 'pow']
 
 
 class TestResultStimuliSerializer(WritableNestedModelSerializer):
@@ -184,10 +184,10 @@ class TestResultListSerializer(serializers.ModelSerializer):
 
 class TestResultDetailSerializer(serializers.ModelSerializer):
     user = UserListSerializer(many=False, read_only=True)
-    test = TestListSerializer(many=False, read_only=True)
-    test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)
+    test = serializers.StringRelatedField()
+    # test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)
+    test_results_stimulus = serializers.RelatedField(many=True, read_only=True)
 
     class Meta:
         model = TestResult
-        fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status', 'test_results_stimulus']
-        read_only_fields = ['user', 'date']
+        fields = ['user', 'description', 'test',  'title', 'description', 'status', 'test_results_stimulus']

@@ -185,8 +185,8 @@ class TestResultListSerializer(serializers.ModelSerializer):
 class TestResultDetailSerializer(serializers.ModelSerializer):
     user = UserListSerializer(many=False, read_only=True)
     test = serializers.StringRelatedField()
-    # test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)
-    test_results_stimulus = serializers.RelatedField(many=True, read_only=True)
+    test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)
+    # test_results_stimulus = serializers.RelatedField(many=True, read_only=True)
 
     class Meta:
         model = TestResult

@@ -169,7 +169,7 @@ class TestResultSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = TestResult
-        fields = ['id', 'user', 'test', 'test_results_stimulus']
+        fields = ['id', 'user', 'test', 'file', 'test_results_stimulus']
         read_only_fields = ['user', 'date']
 
 

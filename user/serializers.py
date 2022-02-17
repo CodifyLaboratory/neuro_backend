@@ -130,10 +130,19 @@ class UserSerializer(WritableNestedModelSerializer):
             'id', 'email', 'user_profile']
 
 
-class UserListSerializer(serializers.ModelSerializer):
+class UserListExportSerializer(serializers.ModelSerializer):
     user_profile = UserProfileDetailSerializer(required=False, many=False)
 
     class Meta:
         model = User
         fields = [
             'email', 'user_profile']
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    user_profile = UserProfileListSerializer(required=False, many=False)
+
+    class Meta:
+        model = User
+        fields = [
+            'id', 'email', 'user_profile']

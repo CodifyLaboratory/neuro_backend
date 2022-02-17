@@ -2,7 +2,7 @@ from django.db.models import Sum
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
-from user.serializers import UserListSerializer
+from user.serializers import UserListSerializer, UserListExportSerializer
 from .models import Test, StimuliCategory, Stimulus, TestResult, Parameter, Calculation, \
     StimuliGroup, Operation, TestResultStimuli
 
@@ -169,7 +169,7 @@ class TestResultSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = TestResult
-        fields = ['id', 'user', 'test', 'file', 'test_results_stimulus']
+        fields = ['id', 'user', 'test', 'file', 'test_results_stimulus', 'value']
         read_only_fields = ['user', 'date']
 
 
@@ -178,16 +178,27 @@ class TestResultListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestResult
-        fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status']
+        fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status', 'value']
         read_only_fields = ['user', 'date']
+
+
+class TestResultDetailExportSerializer(serializers.ModelSerializer):
+    user = UserListExportSerializer(many=False, read_only=True)
+    test = serializers.StringRelatedField()
+    test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TestResult
+        fields = ['user', 'description', 'test',  'title', 'description', 'status', 'test_results_stimulus', 'value']
 
 
 class TestResultDetailSerializer(serializers.ModelSerializer):
     user = UserListSerializer(many=False, read_only=True)
-    test = serializers.StringRelatedField()
+    test = TestListSerializer(many=False, read_only=True)
     test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)
-    # test_results_stimulus = serializers.RelatedField(many=True, read_only=True)
 
     class Meta:
         model = TestResult
-        fields = ['user', 'description', 'test',  'title', 'description', 'status', 'test_results_stimulus']
+        fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status', 'test_results_stimulus',
+                  'value']
+        read_only_fields = ['user', 'date']

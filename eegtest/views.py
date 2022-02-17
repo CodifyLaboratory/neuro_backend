@@ -12,7 +12,7 @@ from .serializers import TestListSerializer, TestSerializer, StimuliCategorySeri
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, ParameterListSerializer, \
     CalculationSerializer, CalculationListSerializer, OperationListSerializer, CalculationDetailSerializer, \
-    TestResultListSerializer
+    TestResultListSerializer, TestResultDetailExportSerializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -102,7 +102,7 @@ class CalculationViewSet(ModelViewSet):
 class TestResultFileViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
     # permission_classes = [IsAuthenticated]
     queryset = TestResult.objects.all()
-    serializer_class = TestResultDetailSerializer
+    serializer_class = TestResultDetailExportSerializer
     renderer_classes = (XLSXRenderer,)
     filename = 'my_export.xlsx'
 

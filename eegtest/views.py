@@ -111,7 +111,6 @@ class TestResultViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        # test = Test.objects.get(id=self.kwargs['pk'])
         return serializer.save(user=self.request.user)
 
     def get_queryset(self):

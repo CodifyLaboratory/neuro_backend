@@ -174,7 +174,8 @@ class TestResultSerializer(WritableNestedModelSerializer):
 
 
 class TestResultListSerializer(serializers.ModelSerializer):
-    test = serializers.PrimaryKeyRelatedField(read_only=True)
+    test = TestListSerializer(many=False, read_only=True)
+    user = UserListSerializer(many=False, read_only=True)
 
     class Meta:
         model = TestResult

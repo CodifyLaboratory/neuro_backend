@@ -176,11 +176,18 @@ class TestResultSerializer(WritableNestedModelSerializer):
 class TestResultListSerializer(serializers.ModelSerializer):
     test = TestListSerializer(many=False, read_only=True)
     user = UserListSerializer(many=False, read_only=True)
+    value = serializers.SerializerMethodField()
 
     class Meta:
         model = TestResult
         fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status', 'value']
         read_only_fields = ['user', 'date']
+
+    def get_value(self, obj):
+        try:
+            return TestResultStimuli.objects.filter(test_result=obj.id).aggregate(Sum('fa1'))['fa1__sum']
+        except:
+            return 0
 
 
 class TestResultDetailExportSerializer(serializers.ModelSerializer):
@@ -190,16 +197,21 @@ class TestResultDetailExportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestResult
-        fields = ['user', 'description', 'test',  'title', 'description', 'status', 'test_results_stimulus', 'value']
+        fields = ['user', 'description', 'test', 'title', 'description', 'status', 'test_results_stimulus', 'value',
+                  'fa1', 'fa2', 'coh', 'tar']
 
 
 class TestResultDetailSerializer(serializers.ModelSerializer):
     user = UserListSerializer(many=False, read_only=True)
     test = TestListSerializer(many=False, read_only=True)
     test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)
+    value = serializers.SerializerMethodField()
 
     class Meta:
         model = TestResult
         fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status', 'test_results_stimulus',
                   'value']
         read_only_fields = ['user', 'date']
+
+    def get_value(self, obj):
+        return TestResultStimuli.objects.filter(test_result=obj.id).aggregate(Sum('fa1'))['fa1__sum']

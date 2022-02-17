@@ -2,7 +2,7 @@ from datetime import date
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-
+from django.db.models import Sum
 from user.models import User
 
 
@@ -105,9 +105,10 @@ class StimuliGroup(models.Model):
 class TestResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='User',
                              blank=True, null=True, related_name='results')
-    test = models.ForeignKey(Test, blank=True, null=True, on_delete=models.CASCADE, verbose_name='Test', related_name='results')
-    title = models.CharField(max_length=250, verbose_name='Title', blank=True, null=True)
-    description = models.TextField(verbose_name='Description', blank=True, null=True)
+    test = models.ForeignKey(Test, blank=True, null=True, on_delete=models.CASCADE, verbose_name='Test',
+                             related_name='results')
+    title = models.CharField(max_length=250, verbose_name='Title of Test Result', blank=True, null=True)
+    description = models.TextField(verbose_name='Description of Test Result', blank=True, null=True)
     file = models.FileField(verbose_name='File', blank=True, null=True)
     date = models.DateField(verbose_name='Date of creation', default=date.today)
     status = models.BooleanField(verbose_name='Status', default=False)
@@ -127,6 +128,10 @@ class TestResultStimuli(models.Model):
     stimuli = models.ForeignKey(Stimulus, on_delete=models.CASCADE, verbose_name='Stimulus',
                                 related_name='test_results_stimulus')
     pow = ArrayField(models.FloatField(), default=list)
+    fa1 = models.FloatField(verbose_name='Frontal Asymmetry 1 Value', blank=True, null=True)
+    fa2 = models.FloatField(verbose_name='Frontal Asymmetry 2 Value', blank=True, null=True)
+    tar = models.FloatField(verbose_name='Cognitive Load TAR Value', blank=True, null=True)
+    coh = models.FloatField(verbose_name='Beta Coherence Value', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Test Result Stimulus'
@@ -134,3 +139,10 @@ class TestResultStimuli(models.Model):
 
     def __str__(self):
         return '{}'.format(self.test_result)
+
+    def save(self, *args, **kwargs):
+        self.fa1 = self.pow[56] / self.pow[11]
+        self.fa2 = self.pow[61] / self.pow[6]
+        self.tar = (self.pow[10] + self.pow[55]) / (self.pow[26] + self.pow[41])
+        self.coh = self.pow[67] + self.pow[57] + self.pow[62]
+        super(TestResultStimuli, self).save(*args, **kwargs)

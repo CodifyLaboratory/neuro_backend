@@ -153,7 +153,7 @@ class TestResultStimuliListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestResultStimuli
-        fields = ['stimuli', 'pow']
+        fields = ['stimuli', 'pow', 'fa1', 'fa2', 'coh', 'tar']
 
 
 class TestResultStimuliSerializer(WritableNestedModelSerializer):
@@ -197,8 +197,7 @@ class TestResultDetailExportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestResult
-        fields = ['user', 'description', 'test', 'title', 'description', 'status', 'test_results_stimulus', 'value',
-                  'fa1', 'fa2', 'coh', 'tar']
+        fields = ['user', 'description', 'test', 'title', 'description', 'status', 'test_results_stimulus', 'value']
 
 
 class TestResultDetailSerializer(serializers.ModelSerializer):

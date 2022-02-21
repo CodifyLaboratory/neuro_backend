@@ -112,7 +112,6 @@ class TestResult(models.Model):
     file = models.FileField(verbose_name='File', blank=True, null=True)
     date = models.DateField(verbose_name='Date of creation', default=date.today)
     status = models.BooleanField(verbose_name='Status', default=False)
-    value = models.FloatField(verbose_name='Value of Calculation')
 
     class Meta:
         verbose_name = 'Test result'

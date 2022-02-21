@@ -169,7 +169,7 @@ class TestResultSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = TestResult
-        fields = ['id', 'user', 'test', 'file', 'test_results_stimulus', 'value']
+        fields = ['id', 'user', 'test', 'file', 'test_results_stimulus']
         read_only_fields = ['user', 'date']
 
 
@@ -197,7 +197,7 @@ class TestResultDetailExportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TestResult
-        fields = ['user', 'description', 'test', 'title', 'description', 'status', 'test_results_stimulus', 'value']
+        fields = ['user', 'description', 'test', 'title', 'description', 'status', 'test_results_stimulus']
 
 
 class TestResultDetailSerializer(serializers.ModelSerializer):

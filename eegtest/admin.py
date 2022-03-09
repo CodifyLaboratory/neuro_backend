@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import StimuliCategory, Test, Stimulus, TestResult, Calculation, StimuliGroup, Parameter, Operation, \
+from .models import StimuliCategory, Test, Stimulus, TestResult, Calculation, Parameter, \
     TestResultStimuli
 
 
@@ -10,6 +10,4 @@ admin.site.register(Stimulus)
 admin.site.register(TestResult)
 admin.site.register(TestResultStimuli)
 admin.site.register(Calculation)
-admin.site.register(StimuliGroup)
 admin.site.register(Parameter)
-admin.site.register(Operation)

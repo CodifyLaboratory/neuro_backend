@@ -7,30 +7,24 @@ from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
 
 from .models import Test, StimuliCategory, Stimulus, TestResult, Parameter, \
-    Calculation, Operation
+    Calculation
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, ParameterListSerializer, \
-    CalculationSerializer, CalculationListSerializer, OperationListSerializer, CalculationDetailSerializer, \
+    CalculationSerializer, CalculationListSerializer, \
     TestResultListSerializer, TestResultDetailExportSerializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, ]
     queryset = StimuliCategory.objects.all()
     serializer_class = StimuliCategorySerializer
 
 
 class ParameterViewSet(ReadOnlyModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     queryset = Parameter.objects.all()
     serializer_class = ParameterListSerializer
-
-
-class OperationViewSet(ReadOnlyModelViewSet):
-    permission_classes = [AllowAny]
-    queryset = Operation.objects.all()
-    serializer_class = OperationListSerializer
 
 
 class TestViewSet(ModelViewSet):
@@ -57,17 +51,27 @@ class TestViewSet(ModelViewSet):
                 return TestDetailUpdateSerializer
             elif self.action == 'list':
                 return TestListSerializer
+            elif self.action == 'calculation':
+                return TestDetailUpdateSerializer
         except:
             raise PermissionDenied
 
 
 class StimuliViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    queryset = Stimulus.objects.all()
+    permission_classes = [IsAuthenticated, ]
 
     def perform_create(self, serializer):
         test = Test.objects.get(id=self.kwargs['pk'], status=True)
         return serializer.save(test=test)
+
+    def get_queryset(self):
+        try:
+            if self.action == 'create' or self.action == 'update' or self.action == 'destroy' or self.action == 'retrieve':
+                return Stimulus.objects.all()
+            elif self.action == 'list':
+                return Stimulus.objects.filter(test=self.kwargs['pk'])
+        except:
+            raise PermissionDenied
 
     def get_serializer_class(self):
         try:
@@ -79,22 +83,16 @@ class StimuliViewSet(ModelViewSet):
             raise PermissionDenied
 
 
-class CalculationViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    queryset = Calculation.objects.all()
-
-    def get_object(self, queryset=None):
-        obj = get_object_or_404(Calculation, test=self.kwargs['pk'])
-        return obj
+class TestCalculationViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated, ]
+    queryset = Test.objects.all()
 
     def get_serializer_class(self):
         try:
-            if self.action == 'update' or self.action == 'delete':
-                return CalculationSerializer
+            if self.action == 'update':
+                return TestSerializer
             elif self.action == 'retrieve':
-                return CalculationDetailSerializer
-            elif self.action == 'list':
-                return CalculationListSerializer
+                return TestSerializer
         except:
             raise NotAuthenticated
 

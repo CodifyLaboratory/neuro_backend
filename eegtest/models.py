@@ -7,6 +7,7 @@ from user.models import User
 
 
 class Test(models.Model):
+    """ Test model """
     title = models.CharField(max_length=250, unique=True, verbose_name='Title', blank=True, null=True)
     description = models.TextField(verbose_name='Description', blank=True, null=True)
     status = models.BooleanField(verbose_name='Status', default=False)
@@ -20,6 +21,7 @@ class Test(models.Model):
 
 
 class StimuliCategory(models.Model):
+    """ Stimuli Category Model """
     title = models.CharField(max_length=250, verbose_name='Stimulus category', blank=True, null=True)
 
     class Meta:
@@ -31,6 +33,7 @@ class StimuliCategory(models.Model):
 
 
 class Stimulus(models.Model):
+    """ Stimuli of the test Model """
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test', related_name='stimulus',
                              blank=True, null=True)
     category = models.ForeignKey(StimuliCategory, on_delete=models.CASCADE, verbose_name='Category',
@@ -52,6 +55,7 @@ class Stimulus(models.Model):
 
 
 class Parameter(models.Model):
+    """ Parameter of the calculation Model """
     title = models.CharField(max_length=250, verbose_name='Parameter', blank=True, null=True)
 
     class Meta:
@@ -62,24 +66,14 @@ class Parameter(models.Model):
         return self.title
 
 
-class Operation(models.Model):
-    title = models.CharField(max_length=250, verbose_name='Operation', blank=True, null=True)
-
-    class Meta:
-        verbose_name = 'Operation'
-        verbose_name_plural = 'Operations'
-
-    def __str__(self):
-        return self.title
-
-
 class Calculation(models.Model):
-    test = models.OneToOneField(Test, on_delete=models.CASCADE, verbose_name='Test',
-                                related_name='calculations', blank=True, null=True)
+    """ Calculation Model """
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='Test',
+                             related_name='calculations', blank=True, null=True)
     parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE, verbose_name='Parameter',
                                   related_name='calculations', blank=True, null=True)
-    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, verbose_name='Operation',
-                                  related_name='calculations', blank=True, null=True)
+    test_stimuli_group = models.ManyToManyField(Stimulus, verbose_name='Stimulus', related_name='test_stimuli_groups')
+    rest_stimuli_group = models.ManyToManyField(Stimulus, verbose_name='Stimulus', related_name='rest_stimuli_groups')
 
     class Meta:
         verbose_name = 'Calculation'
@@ -89,20 +83,8 @@ class Calculation(models.Model):
         return '{}'.format(self.test)
 
 
-class StimuliGroup(models.Model):
-    calculation = models.ForeignKey(Calculation, on_delete=models.CASCADE, verbose_name='Calculation',
-                                    related_name='stimuli_groups', blank=True, null=True)
-    stimuli = models.ManyToManyField(Stimulus, verbose_name='Stimulus', related_name='stimuli_groups')
-
-    class Meta:
-        verbose_name = 'Stimuli Groups'
-        verbose_name_plural = 'Stimuli Groups'
-
-    def __str__(self):
-        return '{}'.format(self.calculation)
-
-
 class TestResult(models.Model):
+    """ Result of the test Model """
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='User',
                              blank=True, null=True, related_name='results')
     test = models.ForeignKey(Test, blank=True, null=True, on_delete=models.CASCADE, verbose_name='Test',
@@ -122,6 +104,7 @@ class TestResult(models.Model):
 
 
 class TestResultStimuli(models.Model):
+    """ Result of each stimulus of the test Model """
     test_result = models.ForeignKey(TestResult, on_delete=models.CASCADE, verbose_name='Test Result',
                                     related_name='test_results_stimulus', blank=True, null=True)
     stimuli = models.ForeignKey(Stimulus, on_delete=models.CASCADE, verbose_name='Stimulus',

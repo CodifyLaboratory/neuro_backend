@@ -3,17 +3,25 @@ from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from user.serializers import UserListSerializer, UserListExportSerializer
-from .models import Test, StimuliCategory, Stimulus, TestResult, Parameter, Calculation, \
-    StimuliGroup, Operation, TestResultStimuli
+from .models import Test, StimuliCategory, Stimulus, TestResult, Parameter, Calculation, TestResultStimuli
 
 
 class StimuliCategorySerializer(serializers.ModelSerializer):
+    """ Stimuli Category View """
     class Meta:
         model = StimuliCategory
         fields = ['id', 'title']
 
 
+class ParameterListSerializer(serializers.ModelSerializer):
+    """ Parameter List View """
+    class Meta:
+        model = Parameter
+        fields = ['id', 'title']
+
+
 class StimuliListSerializer(serializers.ModelSerializer):
+    """ Stimuli of test List View """
     id = serializers.ReadOnlyField(read_only=True, source='get_str_id')
     category = StimuliCategorySerializer(many=False, read_only=True)
     test = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -27,7 +35,17 @@ class StimuliListSerializer(serializers.ModelSerializer):
         return obj.duration.total_seconds()
 
 
+class StimuliList1Serializer(serializers.ModelSerializer):
+    """ Stimuli of test List View """
+    test = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Stimulus
+        fields = ['id', 'test', 'title']
+
+
 class StimuliSerializer(WritableNestedModelSerializer):
+    """ Stimuli Create view """
     id = serializers.ReadOnlyField(read_only=True, source='get_str_id')
     test = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -36,19 +54,46 @@ class StimuliSerializer(WritableNestedModelSerializer):
         fields = ['id', 'test', 'category', 'title', 'description', 'duration', 'file']
 
 
-class TestSerializer(serializers.ModelSerializer):
+class CalculationListSerializer(serializers.ModelSerializer):
+    """ Calculation List View """
+    test = serializers.PrimaryKeyRelatedField(read_only=True)
+    parameter = ParameterListSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Calculation
+        fields = ['id', 'test', 'parameter', 'test_stimuli_group', 'rest_stimuli_group']
+
+
+class CalculationSerializer(WritableNestedModelSerializer):
+    """ Calculation Create View """
+    test = serializers.PrimaryKeyRelatedField(read_only=True)
+    parameter = ParameterListSerializer(many=False, read_only=True, required=False)
+    test_stimuli_group = StimuliList1Serializer(many=True, required=False)
+    rest_stimuli_group = StimuliList1Serializer(many=True, required=False)
+
+    class Meta:
+        model = Calculation
+        fields = ['id', 'test', 'parameter', 'test_stimuli_group', 'rest_stimuli_group']
+
+
+class TestSerializer(WritableNestedModelSerializer):
+    """ Test View """
+    calculations = CalculationSerializer(many=True, required=False)
+
     class Meta:
         model = Test
-        fields = ['id', 'title', 'description', 'status']
+        fields = ['id', 'title', 'calculations']
 
 
 class TestListSerializer(serializers.ModelSerializer):
+    """ Test View """
     class Meta:
         model = Test
         fields = ['id', 'title', 'description', 'status']
 
 
 class TestDetailSerializer(serializers.ModelSerializer):
+    """ Test Detail View """
     stimulus = StimuliListSerializer(many=True, read_only=True)
     stimulus_count = serializers.SerializerMethodField()
     total_duration = serializers.SerializerMethodField()
@@ -65,6 +110,7 @@ class TestDetailSerializer(serializers.ModelSerializer):
 
 
 class TestDetailUpdateSerializer(WritableNestedModelSerializer):
+    """ Test Detail Update View """
     stimulus = StimuliSerializer(many=True, required=False)
 
     class Meta:
@@ -73,6 +119,7 @@ class TestDetailUpdateSerializer(WritableNestedModelSerializer):
 
 
 class StimuliDetailSerializer(serializers.ModelSerializer):
+    """ Stimuli of test Detail View """
     test = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
@@ -80,74 +127,8 @@ class StimuliDetailSerializer(serializers.ModelSerializer):
         fields = ['id', 'test', 'category', 'title', 'description', 'duration', 'file']
 
 
-class ParameterListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Parameter
-        fields = ['id', 'title']
-
-
-class OperationListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Operation
-        fields = ['id', 'title']
-
-
-class StimuliGroupListSerializer(serializers.ModelSerializer):
-    calculation = serializers.PrimaryKeyRelatedField(read_only=True)
-    stimuli = StimuliListSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = StimuliGroup
-        fields = ['id', 'calculation', 'stimuli']
-
-
-class StimuliGroupSerializer(WritableNestedModelSerializer):
-    calculation = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = StimuliGroup
-        fields = ['id', 'calculation', 'stimuli']
-
-
-class StimuliGroupDetailSerializer(WritableNestedModelSerializer):
-    calculation = serializers.PrimaryKeyRelatedField(read_only=True)
-    stimuli = StimuliListSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = StimuliGroup
-        fields = ['id', 'calculation', 'stimuli']
-
-
-class CalculationSerializer(WritableNestedModelSerializer):
-    stimuli_groups = StimuliGroupSerializer(many=True, required=False)
-    test = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = Calculation
-        fields = ['id', 'test', 'parameter', 'operation', 'stimuli_groups']
-
-
-class CalculationDetailSerializer(WritableNestedModelSerializer):
-    stimuli_groups = StimuliGroupDetailSerializer(many=True, required=False)
-    test = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = Calculation
-        fields = ['id', 'test', 'parameter', 'operation', 'stimuli_groups']
-
-
-class CalculationListSerializer(serializers.ModelSerializer):
-    stimuli_groups = StimuliGroupListSerializer(many=True, read_only=True)
-    test = TestListSerializer(many=False, read_only=True)
-    parameter = ParameterListSerializer(many=False, read_only=True)
-    operation = OperationListSerializer(many=False, read_only=True)
-
-    class Meta:
-        model = Calculation
-        fields = ['id', 'test', 'parameter', 'operation', 'stimuli_groups']
-
-
 class TestResultStimuliListSerializer(serializers.ModelSerializer):
+    """ Result of test List View """
     # stimuli = StimuliListSerializer(many=False, read_only=True)
     stimuli = serializers.StringRelatedField()
 
@@ -157,6 +138,7 @@ class TestResultStimuliListSerializer(serializers.ModelSerializer):
 
 
 class TestResultStimuliSerializer(WritableNestedModelSerializer):
+    """ Result of test Create View """
     test_result = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
@@ -165,6 +147,7 @@ class TestResultStimuliSerializer(WritableNestedModelSerializer):
 
 
 class TestResultSerializer(WritableNestedModelSerializer):
+    """ Result of test Create View """
     test_results_stimulus = TestResultStimuliSerializer(many=True, required=False)
 
     class Meta:
@@ -174,6 +157,7 @@ class TestResultSerializer(WritableNestedModelSerializer):
 
 
 class TestResultListSerializer(serializers.ModelSerializer):
+    """ Result of test List View """
     test = TestListSerializer(many=False, read_only=True)
     user = UserListSerializer(many=False, read_only=True)
     value = serializers.SerializerMethodField()
@@ -191,6 +175,7 @@ class TestResultListSerializer(serializers.ModelSerializer):
 
 
 class TestResultDetailExportSerializer(serializers.ModelSerializer):
+    """ Result of test Export View """
     user = UserListExportSerializer(many=False, read_only=True)
     test = serializers.StringRelatedField()
     test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)
@@ -201,6 +186,7 @@ class TestResultDetailExportSerializer(serializers.ModelSerializer):
 
 
 class TestResultDetailSerializer(serializers.ModelSerializer):
+    """ Result of test Detail View """
     user = UserListSerializer(many=False, read_only=True)
     test = TestListSerializer(many=False, read_only=True)
     test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)

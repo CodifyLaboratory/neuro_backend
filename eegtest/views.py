@@ -96,6 +96,10 @@ class TestCalculationViewSet(ModelViewSet):
         except:
             raise NotAuthenticated
 
+    def update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return super().update(request, *args, **kwargs)
+
 
 class TestResultFileViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
     # permission_classes = [IsAuthenticated]

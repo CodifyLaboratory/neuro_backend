@@ -12,7 +12,7 @@ from .serializers import TestListSerializer, TestSerializer, StimuliCategorySeri
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, ParameterListSerializer, \
     CalculationSerializer, CalculationListSerializer, \
-    TestResultListSerializer, TestResultDetailExportSerializer
+    TestResultListSerializer, TestResultDetailExportSerializer, TestCalculationSerializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -61,7 +61,7 @@ class StimuliViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, ]
 
     def perform_create(self, serializer):
-        test = Test.objects.get(id=self.kwargs['pk'], status=True)
+        test = Test.objects.get(id=self.kwargs['pk'])
         return serializer.save(test=test)
 
     def get_queryset(self):
@@ -90,9 +90,9 @@ class TestCalculationViewSet(ModelViewSet):
     def get_serializer_class(self):
         try:
             if self.action == 'update':
-                return TestSerializer
+                return TestCalculationSerializer
             elif self.action == 'retrieve':
-                return TestSerializer
+                return TestCalculationSerializer
         except:
             raise NotAuthenticated
 

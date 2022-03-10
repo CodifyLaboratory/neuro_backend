@@ -78,6 +78,14 @@ class CalculationSerializer(WritableNestedModelSerializer):
 
 class TestSerializer(WritableNestedModelSerializer):
     """ Test View """
+
+    class Meta:
+        model = Test
+        fields = ['id', 'title', 'calculations']
+
+
+class TestCalculationSerializer(WritableNestedModelSerializer):
+    """ Test View """
     calculations = CalculationSerializer(many=True, required=False)
 
     class Meta:

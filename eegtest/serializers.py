@@ -67,7 +67,7 @@ class CalculationListSerializer(serializers.ModelSerializer):
 class CalculationSerializer(WritableNestedModelSerializer):
     """ Calculation Create View """
     test = serializers.PrimaryKeyRelatedField(read_only=True)
-    parameter = ParameterListSerializer(many=False, read_only=True, required=False)
+    parameter = ParameterListSerializer(many=False, required=False)
     test_stimuli_group = StimuliList1Serializer(many=True, required=False)
     rest_stimuli_group = StimuliList1Serializer(many=True, required=False)
 

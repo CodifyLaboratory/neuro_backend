@@ -81,7 +81,7 @@ class TestSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = Test
-        fields = ['id', 'title', 'calculations']
+        fields = ['id', 'title']
 
 
 class TestCalculationSerializer(WritableNestedModelSerializer):

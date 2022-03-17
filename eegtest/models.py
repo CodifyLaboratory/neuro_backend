@@ -72,8 +72,10 @@ class Calculation(models.Model):
                              related_name='calculations', blank=True, null=True)
     parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE, verbose_name='Parameter',
                                   related_name='calculations', blank=True, null=True)
-    test_stimuli_group = models.ManyToManyField(Stimulus, verbose_name='Stimulus', related_name='test_stimuli_groups')
-    rest_stimuli_group = models.ManyToManyField(Stimulus, verbose_name='Stimulus', related_name='rest_stimuli_groups')
+    test_stimuli_group = models.ManyToManyField(Stimulus, verbose_name='Stimulus', related_name='test_stimuli_groups',
+                                                blank=True, null=True)
+    rest_stimuli_group = models.ManyToManyField(Stimulus, verbose_name='Stimulus', related_name='rest_stimuli_groups',
+                                                blank=True, null=True)
 
     class Meta:
         verbose_name = 'Calculation'
@@ -128,3 +130,20 @@ class TestResultStimuli(models.Model):
         self.tar = (self.pow[10] + self.pow[55]) / (self.pow[26] + self.pow[41])
         self.coh = self.pow[67] + self.pow[57] + self.pow[62]
         super(TestResultStimuli, self).save(*args, **kwargs)
+
+
+class TestParameterResult(models.Model):
+    """ Results by each parameters Model """
+    test_result = models.ForeignKey(TestResult, on_delete=models.CASCADE, verbose_name='Test Result',
+                                    related_name='test_results_parameters', blank=True, null=True)
+    parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE, verbose_name='Parameter',
+                                  related_name='test_results_parameters', blank=True, null=True)
+    calculation = models.ForeignKey(Calculation, on_delete=models.CASCADE, verbose_name='Calculation Rule',
+                                    related_name='test_results_parameters', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Test result by Parameter'
+        verbose_name_plural = 'Test results by Parameter'
+
+    def __str__(self):
+        return '{}'.format(self.test_result)

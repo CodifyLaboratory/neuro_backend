@@ -7,12 +7,13 @@ from drf_renderer_xlsx.mixins import XLSXFileMixin
 from drf_renderer_xlsx.renderers import XLSXRenderer
 
 from .models import Test, StimuliCategory, Stimulus, TestResult, Parameter, \
-    Calculation
+    Calculation, TestResultStimuli
 from .serializers import TestListSerializer, TestSerializer, StimuliCategorySerializer, StimuliSerializer, \
     StimuliListSerializer, TestDetailSerializer, TestDetailUpdateSerializer, TestResultSerializer, \
     TestResultDetailSerializer, ParameterListSerializer, \
     CalculationSerializer, CalculationListSerializer, \
-    TestResultListSerializer, TestResultDetailExportSerializer, TestCalculationSerializer
+    TestResultListSerializer, TestResultDetailExportSerializer, TestCalculationSerializer, \
+    TestResultDetailAdminSerializer
 
 
 class StimuliCategoryViewSet(ReadOnlyModelViewSet):
@@ -131,8 +132,12 @@ class TestResultViewSet(ModelViewSet):
             if self.action == 'create' or self.action == 'update' or self.action == 'destroy':
                 return TestResultSerializer
             elif self.action == 'retrieve':
-                return TestResultDetailSerializer
+                return TestResultDetailAdminSerializer
             elif self.action == 'list':
                 return TestResultListSerializer
         except:
             raise PermissionDenied
+
+    # def retrieve(self, request, *args, **kwargs):
+    #     # queryset = TestResultStimuli.objects.filter(test_result=self.get_object())
+    #     return

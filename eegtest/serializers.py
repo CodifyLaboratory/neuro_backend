@@ -286,7 +286,7 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         stimuli_queryset = Stimulus.objects.filter(id__in=stimuli_result_queryset,
                                                    test_results_stimulus__test_result=obj.id).annotate(
             fa1_value=Sum(F('test_results_stimulus__fa1')), fa2_value=Sum(F('test_results_stimulus__fa2')),
-            coh_value=Sum(F('test_results_stimulus__coh')), tar_value=Sum(F('test_results_stimulus__tar')))
+            coh_value=Avg(F('test_results_stimulus__coh')), tar_value=Sum(F('test_results_stimulus__tar')))
         return StimuliList1Serializer(stimuli_queryset, many=True).data
 
     def get_test_results_parameters(self, obj):
@@ -305,7 +305,7 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         # Test Value - COH
         test_stimuli_group_coh = Calculation.objects.values('test_stimuli_group').filter(test=obj.test, parameter=3)
         test_value_coh = Stimulus.objects.filter(id__in=test_stimuli_group_coh).annotate(
-            coh_value=Sum(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(Avg('coh_value'))[
+            coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(Avg('coh_value'))[
             'coh_value__avg']
 
         # Test Value - TAR
@@ -329,7 +329,7 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         # Rest Value - COH
         rest_stimuli_group_coh = Calculation.objects.values('rest_stimuli_group').filter(test=obj.test, parameter=3)
         rest_value_coh = Stimulus.objects.filter(id__in=rest_stimuli_group_coh).annotate(
-            coh_value=Sum(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(Avg('coh_value'))[
+            coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(Avg('coh_value'))[
             'coh_value__avg']
 
         # Rest Value - TAR

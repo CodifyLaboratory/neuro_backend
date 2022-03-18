@@ -305,12 +305,13 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         # Test Value - COH
         test_stimuli_group_coh = Calculation.objects.values('test_stimuli_group').filter(test=obj.test, parameter=3)
         test_value_coh = Stimulus.objects.filter(id__in=test_stimuli_group_coh).annotate(
-            coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField()))
+            coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(Avg('coh_value'))[
+            'coh_value__avg']
 
         # Test Value - TAR
         test_stimuli_group_tar = Calculation.objects.values('test_stimuli_group').filter(test=obj.test, parameter=4)
         test_value_tar = Stimulus.objects.filter(id__in=test_stimuli_group_tar).annotate(
-            tar_value=Avg(F('test_results_stimulus__tar'), output_field=FloatField())).aggregate(Avg('tar_value'))[
+            tar_value=Sum(F('test_results_stimulus__tar'), output_field=FloatField())).aggregate(Avg('tar_value'))[
             'tar_value__avg']
 
         # Rest Value - FA1
@@ -328,7 +329,9 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         # Rest Value - COH
         rest_stimuli_group_coh = Calculation.objects.values('rest_stimuli_group').filter(test=obj.test, parameter=3)
         rest_value_coh = Stimulus.objects.filter(id__in=rest_stimuli_group_coh).annotate(
-            coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField()))
+            coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(Avg('coh_value'))[
+            'coh_value__avg']
+
         # Rest Value - TAR
         rest_stimuli_group_tar = Calculation.objects.values('rest_stimuli_group').filter(test=obj.test, parameter=4)
         rest_value_tar = Stimulus.objects.filter(id__in=rest_stimuli_group_tar).annotate(
@@ -339,21 +342,21 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
             test_value=Case(
                 When(parameter=1, then=Value(test_value_fa1)),
                 When(parameter=2, then=Value(test_value_fa2)),
-                When(parameter=3, then=Value(100.0)),
+                When(parameter=3, then=Value(test_value_coh)),
                 When(parameter=4, then=Value(test_value_tar)),
                 default=Value(0.0)
             ),
             rest_value=Case(
                 When(parameter=1, then=Value(rest_value_fa1)),
                 When(parameter=2, then=Value(rest_value_fa2)),
-                When(parameter=3, then=Value(100.0)),
+                When(parameter=3, then=Value(rest_value_coh)),
                 When(parameter=4, then=Value(rest_value_tar)),
                 default=Value(0.0)
             ),
             result_value=Case(
                 When(parameter=1, then=Value(test_value_fa1 - rest_value_fa1)),
                 When(parameter=2, then=Value(test_value_fa2 - rest_value_fa2)),
-                When(parameter=3, then=Value(100.0 - 100.0)),
+                When(parameter=3, then=Value(test_value_coh - rest_value_coh)),
                 When(parameter=4, then=Value(test_value_tar - rest_value_tar)),
                 default=Value(0.0)
             ))

@@ -305,8 +305,7 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         # Test Value - COH
         test_stimuli_group_coh = Calculation.objects.values('test_stimuli_group').filter(test=obj.test, parameter=3)
         test_value_coh = Stimulus.objects.filter(id__in=test_stimuli_group_coh).annotate(
-            coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(Avg('coh_value'))[
-            'coh_value__avg']
+            coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField()))
 
         # Test Value - TAR
         test_stimuli_group_tar = Calculation.objects.values('test_stimuli_group').filter(test=obj.test, parameter=4)
@@ -329,9 +328,7 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         # Rest Value - COH
         rest_stimuli_group_coh = Calculation.objects.values('rest_stimuli_group').filter(test=obj.test, parameter=3)
         rest_value_coh = Stimulus.objects.filter(id__in=rest_stimuli_group_coh).annotate(
-            coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(Avg('coh_value'))[
-            'coh_value__avg']
-
+            coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField()))
         # Rest Value - TAR
         rest_stimuli_group_tar = Calculation.objects.values('rest_stimuli_group').filter(test=obj.test, parameter=4)
         rest_value_tar = Stimulus.objects.filter(id__in=rest_stimuli_group_tar).annotate(

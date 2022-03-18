@@ -105,6 +105,8 @@ class TestResult(models.Model):
         return '{}'.format(self.user)
 
 
+import numpy as np
+
 class TestResultStimuli(models.Model):
     """ Result of each stimulus of the test Model """
     test_result = models.ForeignKey(TestResult, on_delete=models.CASCADE, verbose_name='Test Result',
@@ -125,10 +127,10 @@ class TestResultStimuli(models.Model):
         return '{}'.format(self.test_result)
 
     def save(self, *args, **kwargs):
-        self.fa1 = self.pow[56] / self.pow[11]
-        self.fa2 = self.pow[61] / self.pow[6]
+        self.fa1 = np.log(self.pow[56] / self.pow[11])
+        self.fa2 = np.log(self.pow[61] / self.pow[6])
         self.tar = (self.pow[10] + self.pow[55]) / (self.pow[26] + self.pow[41])
-        self.coh = self.pow[67] + self.pow[57] + self.pow[62]
+        self.coh = 100
         super(TestResultStimuli, self).save(*args, **kwargs)
 
 

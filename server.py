@@ -4,12 +4,12 @@ from scipy import signal
 import requests
 
 # api-endpoint 
-URL = "http://108.160.141.166/api/get_data_headset"
-data = ''
+# URL = "http://108.160.141.166/api/get_data_headset"
+# data = ''
 # sending get request and saving the response as response object 
-rrr = requests.post(url=URL, data=data)
-
-json_str1 = rrr.text
+# rrr = requests.post(url=URL, data=data)
+#
+# json_str1 = rrr.text
 # print("The pastebin URL is:%s"%pastebin_url)
 
 # [theta,alpha,betaL,betaH,gamma]
@@ -2068,25 +2068,25 @@ p8_alpha = []
 
 #########################################################################################################
 #########################################################################################################
-def get_json_data():
-    result = []
-    i = 1
-    for item in final_fa:
-        obj = CustomType("FA" + str(i) + "_val-", item)
-        result.append(json.loads(obj.toJSON()))
-        i = i + 1
-    i = 1
-    for item in final_coherence:
-        obj = CustomType("Co_val-" + str(i), item)
-        result.append(json.loads(obj.toJSON()))
-        i = i + 1
-    i = 1
-    for item in final_tar:
-        obj = CustomType("TAR_val-" + str(i), item)
-        result.append(json.loads(obj.toJSON()))
-        i = i + 1
-
-    return json.dumps(result)
+# def get_json_data():
+#     result = []
+#     i = 1
+#     for item in final_fa:
+#         obj = CustomType("FA" + str(i) + "_val-", item)
+#         result.append(json.loads(obj.toJSON()))
+#         i = i + 1
+#     i = 1
+#     for item in final_coherence:
+#         obj = CustomType("Co_val-" + str(i), item)
+#         result.append(json.loads(obj.toJSON()))
+#         i = i + 1
+#     i = 1
+#     for item in final_tar:
+#         obj = CustomType("TAR_val-" + str(i), item)
+#         result.append(json.loads(obj.toJSON()))
+#         i = i + 1
+#
+#     return json.dumps(result)
 
 
 #########################################################################################################
@@ -2095,13 +2095,11 @@ def Calculate_Frontal_Asymmetry(myjson):
     json_obj = json.loads(myjson)
     Frontal_asymmetry1_array = []
     Frontal_asymmetry2_array = []
-
     stimulus_start_time = 0
     stimulus_end_time = 0
+
     for i in range(len(Stimulus_Durations_in_order)):
         stimulus_end_time = Stimulus_Durations_in_order[i] + stimulus_start_time
-        print("start time is:", stimulus_start_time)
-        print("end time is:", stimulus_end_time)
         for key in json_obj.keys():
             if key.startswith('f4') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
                     json_obj[key][1].split('-')[1]) > stimulus_start_time):
@@ -2115,8 +2113,6 @@ def Calculate_Frontal_Asymmetry(myjson):
             if key.startswith('f7') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
                     json_obj[key][1].split('-')[1]) > stimulus_start_time):
                 f7_alpha.append(json_obj[key][1].split('-')[0])
-        # print("len f4#######################:", len(f4_alpha))
-        # print("len f3#######################:", len(f3_alpha))
         for i in range(len(f4_alpha)):
             nomin_f4 = f4_alpha[i]
             denom_f3 = f3_alpha[i]
@@ -2126,7 +2122,6 @@ def Calculate_Frontal_Asymmetry(myjson):
             # print("f3 nomin:" , np.log(float(denom)))
             Frontal_asymmetry1_array.append(np.log(float(nomin_f4)) - np.log(float(denom_f3)))
             Frontal_asymmetry2_array.append(np.log(float(nomin_f8)) - np.log(float(denom_f7)))
-        print("len Frontal_asymmetry1_array#######################:", len(Frontal_asymmetry1_array))
         f4_alpha.clear()
         f3_alpha.clear()
         f8_alpha.clear()
@@ -2245,8 +2240,6 @@ def Calculate_Coherence_Phase(myjson, wave1, wave1_signal, wave2, wave2_signal, 
     stimulus_end_time = 0
     for i in range(len(Stimulus_Durations_in_order)):
         stimulus_end_time = Stimulus_Durations_in_order[i] + stimulus_start_time
-        print("start time is:", stimulus_start_time)
-        print("end time is:", stimulus_end_time)
         for i in range(len(CoherenceObj_list_wave1)):
             tmp1 = CoherenceObj_list_wave1[i]
             if (tmp1.sampling_time <= stimulus_end_time) and (tmp1.sampling_time > stimulus_start_time):
@@ -2308,8 +2301,6 @@ def Calculate_TAR(myjson):
     stimulus_end_time = 0
     for i in range(len(Stimulus_Durations_in_order)):
         stimulus_end_time = Stimulus_Durations_in_order[i] + stimulus_start_time
-        print("start time is:", stimulus_start_time)
-        print("end time is:", stimulus_end_time)
         for key in json_obj.keys():
             if key.startswith('f4') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
                     json_obj[key][1].split('-')[1]) > stimulus_start_time):
@@ -2317,6 +2308,8 @@ def Calculate_TAR(myjson):
             if key.startswith('f3') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
                     json_obj[key][1].split('-')[1]) > stimulus_start_time):
                 f3_theta.append(float(json_obj[key][0].split('-')[0]))
+                print(f3_theta)
+                print(np.nanmean(f3_theta))
             if key.startswith('p8') and (int(json_obj[key][1].split('-')[1]) <= stimulus_end_time and int(
                     json_obj[key][1].split('-')[1]) > stimulus_start_time):
                 p8_alpha.append(float(json_obj[key][1].split('-')[0]))
@@ -2342,10 +2335,12 @@ def Calculate_TAR(myjson):
 #######################################################################################################
 #######################################################################################################
 result = []
-final_fa = Calculate_Frontal_Asymmetry(json_str)
+# final_fa = Calculate_Frontal_Asymmetry(json_str)
+# final_coherence = Calculate_Coherence_Phase(json_str, 'af4', 'theta', 'fc5', 'betaH', 'o1', 'gamma')
+# final_tar = Calculate_TAR(json_str)
+# result = get_json_data()
+# print(result)
+# print(final_fa)
+
 final_coherence = Calculate_Coherence_Phase(json_str, 'af4', 'theta', 'fc5', 'betaH', 'o1', 'gamma')
-final_tar = Calculate_TAR(json_str)
-result = get_json_data()
-print(result)
-print(final_fa)
 print(final_coherence)

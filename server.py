@@ -2342,5 +2342,5 @@ result = []
 # print(result)
 # print(final_fa)
 
-final_coherence = Calculate_Coherence_Phase(json_str, 'af4', 'theta', 'fc5', 'betaH', 'o1', 'gamma')
-print(final_coherence)
+# final_coherence = Calculate_Coherence_Phase(json_str, 'af4', 'theta', 'fc5', 'betaH', 'o1', 'gamma')
+# print(final_coherence)

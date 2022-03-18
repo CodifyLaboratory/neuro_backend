@@ -339,21 +339,21 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
             test_value=Case(
                 When(parameter=1, then=Value(test_value_fa1)),
                 When(parameter=2, then=Value(test_value_fa2)),
-                When(parameter=3, then=Value(test_value_coh)),
+                When(parameter=3, then=Value(100.0)),
                 When(parameter=4, then=Value(test_value_tar)),
                 default=Value(0.0)
             ),
             rest_value=Case(
                 When(parameter=1, then=Value(rest_value_fa1)),
                 When(parameter=2, then=Value(rest_value_fa2)),
-                When(parameter=3, then=Value(rest_value_coh)),
+                When(parameter=3, then=Value(100.0)),
                 When(parameter=4, then=Value(rest_value_tar)),
                 default=Value(0.0)
             ),
             result_value=Case(
                 When(parameter=1, then=Value(test_value_fa1 - rest_value_fa1)),
                 When(parameter=2, then=Value(test_value_fa2 - rest_value_fa2)),
-                When(parameter=3, then=Value(test_value_coh - rest_value_coh)),
+                When(parameter=3, then=Value(100.0 - 100.0)),
                 When(parameter=4, then=Value(test_value_tar - rest_value_tar)),
                 default=Value(0.0)
             ))

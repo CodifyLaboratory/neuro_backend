@@ -291,49 +291,49 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
 
     def get_test_results_parameters(self, obj):
         # Test Value - FA1
-        test_stimuli_group_fa1 = Calculation.objects.values('test_stimuli_group').filter(test=obj.test, parameter=1)
+        test_stimuli_group_fa1 = Calculation.objects.values('test_stimuli_group').filter(test__results=obj.id, test=obj.test, parameter=1)
         test_value_fa1 = Stimulus.objects.filter(id__in=test_stimuli_group_fa1).annotate(
             fa1_value=Sum(F('test_results_stimulus__fa1'), output_field=FloatField())).aggregate(Avg('fa1_value'))[
             'fa1_value__avg']
 
         # Test Value - FA2
-        test_stimuli_group_fa2 = Calculation.objects.values('test_stimuli_group').filter(test=obj.test, parameter=2)
+        test_stimuli_group_fa2 = Calculation.objects.values('test_stimuli_group').filter(test__results=obj.id, test=obj.test, parameter=2)
         test_value_fa2 = Stimulus.objects.filter(id__in=test_stimuli_group_fa2).annotate(
             fa2_value=Sum(F('test_results_stimulus__fa2'), output_field=FloatField())).aggregate(Avg('fa2_value'))[
             'fa2_value__avg']
 
         # Test Value - COH
-        test_stimuli_group_coh = Calculation.objects.values('test_stimuli_group').filter(test=obj.test, parameter=3)
+        test_stimuli_group_coh = Calculation.objects.values('test_stimuli_group').filter(test__results=obj.id, test=obj.test, parameter=3)
         test_value_coh = Stimulus.objects.filter(id__in=test_stimuli_group_coh).annotate(
             coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(Avg('coh_value'))[
             'coh_value__avg']
 
         # Test Value - TAR
-        test_stimuli_group_tar = Calculation.objects.values('test_stimuli_group').filter(test=obj.test, parameter=4)
+        test_stimuli_group_tar = Calculation.objects.values('test_stimuli_group').filter(test__results=obj.id, test=obj.test, parameter=4)
         test_value_tar = Stimulus.objects.filter(id__in=test_stimuli_group_tar).annotate(
             tar_value=Sum(F('test_results_stimulus__tar'), output_field=FloatField())).aggregate(Avg('tar_value'))[
             'tar_value__avg']
 
         # Rest Value - FA1
-        rest_stimuli_group_fa1 = Calculation.objects.values('rest_stimuli_group').filter(test=obj.test, parameter=1)
+        rest_stimuli_group_fa1 = Calculation.objects.values('rest_stimuli_group').filter(test__results=obj.id, test=obj.test, parameter=1)
         rest_value_fa1 = Stimulus.objects.filter(id__in=rest_stimuli_group_fa1).annotate(
             fa1_value=Sum(F('test_results_stimulus__fa1'), output_field=FloatField())).aggregate(Avg('fa1_value'))[
             'fa1_value__avg']
 
         # Rest Value - FA2
-        rest_stimuli_group_fa2 = Calculation.objects.values('rest_stimuli_group').filter(test=obj.test, parameter=2)
+        rest_stimuli_group_fa2 = Calculation.objects.values('rest_stimuli_group').filter(test__results=obj.id, test=obj.test, parameter=2)
         rest_value_fa2 = Stimulus.objects.filter(id__in=rest_stimuli_group_fa2).annotate(
             fa2_value=Sum(F('test_results_stimulus__fa2'), output_field=FloatField())).aggregate(Avg('fa2_value'))[
             'fa2_value__avg']
 
         # Rest Value - COH
-        rest_stimuli_group_coh = Calculation.objects.values('rest_stimuli_group').filter(test=obj.test, parameter=3)
+        rest_stimuli_group_coh = Calculation.objects.values('rest_stimuli_group').filter(test__results=obj.id, test=obj.test, parameter=3)
         rest_value_coh = Stimulus.objects.filter(id__in=rest_stimuli_group_coh).annotate(
             coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(Avg('coh_value'))[
             'coh_value__avg']
 
         # Rest Value - TAR
-        rest_stimuli_group_tar = Calculation.objects.values('rest_stimuli_group').filter(test=obj.test, parameter=4)
+        rest_stimuli_group_tar = Calculation.objects.values('rest_stimuli_group').filter(test__results=obj.id, test=obj.test, parameter=4)
         rest_value_tar = Stimulus.objects.filter(id__in=rest_stimuli_group_tar).annotate(
             tar_value=Avg(F('test_results_stimulus__tar'), output_field=FloatField())).aggregate(Avg('tar_value'))[
             'tar_value__avg']

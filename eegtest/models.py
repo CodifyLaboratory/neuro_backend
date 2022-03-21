@@ -47,8 +47,8 @@ class Stimulus(models.Model):
         verbose_name = 'Stimuli'
         verbose_name_plural = 'Stimulus'
 
-    # def __str__(self):
-    #     return self.title
+    def __str__(self):
+        return self.title
 
     def get_str_id(self):
         return str(self.pk)

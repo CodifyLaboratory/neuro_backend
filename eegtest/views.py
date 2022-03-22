@@ -105,7 +105,7 @@ class TestCalculationViewSet(ModelViewSet):
 class TestResultFileViewSet(XLSXFileMixin, ReadOnlyModelViewSet):
     # permission_classes = [IsAuthenticated]
     queryset = TestResult.objects.all()
-    serializer_class = TestResultDetailExportSerializer
+    serializer_class = TestResultDetailAdminSerializer
     renderer_classes = (XLSXRenderer,)
     filename = 'my_export.xlsx'
 

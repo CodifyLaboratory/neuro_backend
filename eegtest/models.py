@@ -104,6 +104,10 @@ class TestResult(models.Model):
     def __str__(self):
         return '{}'.format(self.user)
 
+    def save(self, *args, **kwargs):
+        self.title = 'Test result of {}'.format(self.test)
+        super(TestResult, self).save(*args, **kwargs)
+
 
 import numpy as np
 

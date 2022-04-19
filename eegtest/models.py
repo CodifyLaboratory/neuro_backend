@@ -4,6 +4,8 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import Sum
 from user.models import User
+from scipy import signal
+import numpy as np
 
 
 class Test(models.Model):
@@ -109,8 +111,6 @@ class TestResult(models.Model):
         super(TestResult, self).save(*args, **kwargs)
 
 
-import numpy as np
-
 class TestResultStimuli(models.Model):
     """ Result of each stimulus of the test Model """
     test_result = models.ForeignKey(TestResult, on_delete=models.CASCADE, verbose_name='Test Result',
@@ -134,7 +134,10 @@ class TestResultStimuli(models.Model):
         self.fa1 = np.log(self.pow[56] / self.pow[11])
         self.fa2 = np.log(self.pow[61] / self.pow[6])
         self.tar = (self.pow[10] + self.pow[55]) / (self.pow[26] + self.pow[41])
-        self.coh = 100
+        PC1 = np.nanmean(signal.coherence([self.pow[65]], [self.pow[18]])[1]) if np.any(np.isfinite(signal.coherence([self.pow[65]], [self.pow[18]])[1])) else 1
+        PC2 = np.nanmean(signal.coherence([self.pow[65]], [self.pow[34]])[1]) if np.any(np.isfinite(signal.coherence([self.pow[65]], [self.pow[34]])[1])) else 1
+        PC3 = np.nanmean(signal.coherence([self.pow[18]], [self.pow[34]])[1]) if np.any(np.isfinite(signal.coherence([self.pow[18]], [self.pow[34]])[1])) else 1
+        self.coh = (PC1 + PC2 + PC3) / 3 * 100
         super(TestResultStimuli, self).save(*args, **kwargs)
 
 

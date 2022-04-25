@@ -122,6 +122,9 @@ class TestResultStimuli(models.Model):
     fa2 = models.FloatField(verbose_name='Frontal Asymmetry 2 Value', blank=True, null=True)
     tar = models.FloatField(verbose_name='Cognitive Load TAR Value', blank=True, null=True)
     coh = models.FloatField(verbose_name='Beta Coherence Value', blank=True, null=True)
+    wave1 = models.FloatField(verbose_name='Beta Coherence Value - Wave1', blank=True, null=True)
+    wave2 = models.FloatField(verbose_name='Beta Coherence Value - Wave2', blank=True, null=True)
+    wave3 = models.FloatField(verbose_name='Beta Coherence Value - Wave3', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Test Result Stimulus'
@@ -134,25 +137,14 @@ class TestResultStimuli(models.Model):
         self.fa1 = np.log(self.pow[56] / self.pow[11])
         self.fa2 = np.log(self.pow[61] / self.pow[6])
         self.tar = (self.pow[10] + self.pow[55]) / (self.pow[26] + self.pow[41])
-        PC1 = np.nanmean(signal.coherence([self.pow[65]], [self.pow[18]])[1]) if np.any(np.isfinite(signal.coherence([self.pow[65]], [self.pow[18]])[1])) else 1
-        PC2 = np.nanmean(signal.coherence([self.pow[65]], [self.pow[34]])[1]) if np.any(np.isfinite(signal.coherence([self.pow[65]], [self.pow[34]])[1])) else 1
-        PC3 = np.nanmean(signal.coherence([self.pow[18]], [self.pow[34]])[1]) if np.any(np.isfinite(signal.coherence([self.pow[18]], [self.pow[34]])[1])) else 1
+        PC1 = np.nanmean(signal.coherence([self.pow[67]], [self.pow[57]])[1]) if np.any(
+            np.isfinite(signal.coherence([self.pow[67]], [self.pow[57]])[1])) else 1
+        PC2 = np.nanmean(signal.coherence([self.pow[67]], [self.pow[62]])[1]) if np.any(
+            np.isfinite(signal.coherence([self.pow[67]], [self.pow[62]])[1])) else 1
+        PC3 = np.nanmean(signal.coherence([self.pow[57]], [self.pow[62]])[1]) if np.any(
+            np.isfinite(signal.coherence([self.pow[57]], [self.pow[62]])[1])) else 1
         self.coh = (PC1 + PC2 + PC3) / 3 * 100
+        self.wave1 = self.pow[67]
+        self.wave2 = self.pow[57]
+        self.wave3 = self.pow[62]
         super(TestResultStimuli, self).save(*args, **kwargs)
-
-
-class TestParameterResult(models.Model):
-    """ Results by each parameters Model """
-    test_result = models.ForeignKey(TestResult, on_delete=models.CASCADE, verbose_name='Test Result',
-                                    related_name='test_results_parameters', blank=True, null=True)
-    parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE, verbose_name='Parameter',
-                                  related_name='test_results_parameters', blank=True, null=True)
-    calculation = models.ForeignKey(Calculation, on_delete=models.CASCADE, verbose_name='Calculation Rule',
-                                    related_name='test_results_parameters', blank=True, null=True)
-
-    class Meta:
-        verbose_name = 'Test result by Parameter'
-        verbose_name_plural = 'Test results by Parameter'
-
-    def __str__(self):
-        return '{}'.format(self.test_result)

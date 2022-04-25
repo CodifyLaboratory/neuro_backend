@@ -1,10 +1,12 @@
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Sum, Count, Q, FloatField, F, ExpressionWrapper, Avg, Case, When, Value, IntegerField
 from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from user.serializers import UserListSerializer, UserListExportSerializer
-from .models import Test, StimuliCategory, Stimulus, TestResult, Parameter, Calculation, TestResultStimuli, \
-    TestParameterResult
+from .models import Test, StimuliCategory, Stimulus, TestResult, Parameter, Calculation, TestResultStimuli
+import numpy as np
+from scipy import signal
 
 
 class StimuliCategorySerializer(serializers.ModelSerializer):
@@ -159,37 +161,15 @@ class StimuliDetailSerializer(serializers.ModelSerializer):
 
 class TestResultStimuliListSerializer(serializers.ModelSerializer):
     """ Result of test List View """
-    # stimuli = StimuliListSerializer(many=False, read_only=True)
     stimuli = serializers.StringRelatedField()
-
-    # fa1_value = serializers.SerializerMethodField()
-    # value = serializers.SerializerMethodField()
 
     class Meta:
         model = TestResultStimuli
         fields = ['stimuli', 'fa1', 'fa2', 'coh', 'tar']
 
-    # def get_stimulus(self, obj):
-    #     stimuli_result_queryset = TestResultStimuli.objects.values('stimuli')
-    #     stimuli_queryset = Stimulus.objects.filter(id__in=stimuli_result_queryset).distinct()
-    #     return StimuliListSerializer(stimuli_queryset, many=True).data
-
-    # def get_fa1_value(self, obj):
-    #     stimuli_result_queryset = TestResultStimuli.objects.values('stimuli')
-    #     stimuli_queryset = Stimulus.objects.filter(id__in=stimuli_result_queryset).distinct()
-    #     stimuli_result_queryset = TestResultStimuli.objects.values('fa1').annotate(fa1_sum=Sum('fa1'))
-    #     return StimuliListSerializer(stimuli_queryset, many=True).data
-
-    # def get_value(self, obj):
-    #     stimuli_result_queryset = TestResultStimuli.objects.values('stimuli')
-    #     # print(stimuli_result_queryset)
-    #     stimuli_queryset = Stimulus.objects.filter(id__in=stimuli_result_queryset).distinct()
-    #     return TestResultStimuli.objects.filter(stimuli__in=stimuli_queryset).aggregate(Sum('fa1'))['fa1__sum']
-
 
 class TestResultStimuliDetailSerializer(serializers.ModelSerializer):
     """ Result of test List View """
-    # stimuli = StimuliListSerializer(many=False, read_only=True)
     stimuli = serializers.StringRelatedField()
 
     class Meta:
@@ -204,15 +184,6 @@ class TestResultStimuliSerializer(WritableNestedModelSerializer):
     class Meta:
         model = TestResultStimuli
         fields = ['id', 'test_result', 'stimuli', 'pow']
-
-
-class TestParameterResultSerializer(serializers.ModelSerializer):
-    """ Result of test Parameter View """
-    test_result = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = TestParameterResult
-        fields = ['id', 'test_result', 'parameter', 'calculation', 'test_value', 'rest_value', 'result_value']
 
 
 class TestResultSerializer(WritableNestedModelSerializer):
@@ -235,24 +206,14 @@ class TestResultListSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'test', 'date', 'title', 'description', 'file', 'status']
         read_only_fields = ['user', 'date']
 
-    # def get_value(self, obj):
-    #     try:
-    #         return TestResultStimuli.objects.filter(test_result=obj.id).aggregate(Sum('fa1'))['fa1__sum']
-    #     except:
-    #         return 0
-
 
 class TestResultDetailExportSerializer(serializers.ModelSerializer):
-    """ Result of test Export View """
-    user = UserListExportSerializer(many=False, read_only=True)
-    test = serializers.StringRelatedField()
-    test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)
-    test_results_parameters = TestParameterResultSerializer(many=True, read_only=True)
+    """ Result of test Export View by stimuli """
+    stimuli = serializers.StringRelatedField()
 
     class Meta:
-        model = TestResult
-        fields = ['user', 'description', 'test', 'title', 'description', 'status', 'test_results_stimulus',
-                  'test_results_parameters']
+        model = TestResultStimuli
+        fields = ['stimuli', 'pow']
 
 
 class TestResultDetailSerializer(serializers.ModelSerializer):
@@ -260,7 +221,6 @@ class TestResultDetailSerializer(serializers.ModelSerializer):
     user = UserListSerializer(many=False, read_only=True)
     test = TestListSerializer(many=False, read_only=True)
     test_results_stimulus = TestResultStimuliListSerializer(many=True, read_only=True)
-    test_results_parameters = TestParameterResultSerializer(many=True, read_only=True)
 
     class Meta:
         model = TestResult
@@ -290,7 +250,6 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         return StimuliList1Serializer(stimuli_queryset, many=True).data
 
     def get_test_results_parameters(self, obj):
-        stimuluses = Calculation.objects.all()
 
         # Test Value - FA1
         test_stimuli_group_fa1 = Calculation.objects.values('test_stimuli_group').filter(test__results=obj.id,
@@ -321,6 +280,16 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         test_stimuli_group_coh = Calculation.objects.values('test_stimuli_group').filter(test__results=obj.id,
                                                                                          test=obj.test, parameter=3)
         if Stimulus.objects.filter(id__in=test_stimuli_group_coh).exists():
+            # Это калькуляция для всех стимулов в тесте
+            wave1 = TestResultStimuli.objects.values_list('wave1', flat=True).filter(stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
+            wave2 = TestResultStimuli.objects.values_list('wave2', flat=True).filter(stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
+            wave3 = TestResultStimuli.objects.values_list('wave3', flat=True).filter(stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
+            PC1 = np.nanmean(signal.coherence(wave1, wave2)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave2)[1])) else 1
+            PC2 = np.nanmean(signal.coherence(wave1, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave3)[1])) else 1
+            PC3 = np.nanmean(signal.coherence(wave2, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave2, wave3)[1])) else 1
+            PC = (PC1 + PC2 + PC3) / 3 * 100
+
+            # Это старый код для нахождения среднего арифмитического среди всех coh_value
             test_value_coh = \
                 Stimulus.objects.filter(id__in=test_stimuli_group_coh,
                                         test_results_stimulus__test_result=obj.id).annotate(

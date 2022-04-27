@@ -324,22 +324,14 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         test_stimuli_group_coh = Calculation.objects.values('test_stimuli_group').filter(test__results=obj.id,
                                                                                          test=obj.test, parameter=3)
         if Stimulus.objects.filter(id__in=test_stimuli_group_coh).exists():
-            # Это калькуляция для всех стимулов в тесте
             wave1 = TestResultStimuli.objects.values_list('wave1', flat=True).filter(stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
             wave2 = TestResultStimuli.objects.values_list('wave2', flat=True).filter(stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
             wave3 = TestResultStimuli.objects.values_list('wave3', flat=True).filter(stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
-            PC1 = np.nanmean(signal.coherence(wave1, wave2)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave2)[1])) else 1
-            PC2 = np.nanmean(signal.coherence(wave1, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave3)[1])) else 1
-            PC3 = np.nanmean(signal.coherence(wave2, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave2, wave3)[1])) else 1
-            PC = (PC1 + PC2 + PC3) / 3 * 100
-
-            # Это старый код для нахождения среднего арифмитического среди всех coh_value
-            test_value_coh = \
-                Stimulus.objects.filter(id__in=test_stimuli_group_coh,
-                                        test_results_stimulus__test_result=obj.id).annotate(
-                    coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(
-                    Avg('coh_value'))[
-                    'coh_value__avg']
+            pc1 = np.nanmean(signal.coherence(wave1, wave2)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave2)[1])) else 1
+            pc2 = np.nanmean(signal.coherence(wave1, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave3)[1])) else 1
+            pc3 = np.nanmean(signal.coherence(wave2, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave2, wave3)[1])) else 1
+            pc = (pc1 + pc2 + pc3) / 3 * 100
+            test_value_coh = pc
         else:
             test_value_coh = float(0)
 
@@ -387,12 +379,14 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         rest_stimuli_group_coh = Calculation.objects.values('rest_stimuli_group').filter(test__results=obj.id,
                                                                                          test=obj.test, parameter=3)
         if Stimulus.objects.filter(id__in=rest_stimuli_group_coh).exists():
-            rest_value_coh = \
-                Stimulus.objects.filter(id__in=rest_stimuli_group_coh,
-                                        test_results_stimulus__test_result=obj.id).annotate(
-                    coh_value=Avg(F('test_results_stimulus__coh'), output_field=FloatField())).aggregate(
-                    Avg('coh_value'))[
-                    'coh_value__avg']
+            wave1 = TestResultStimuli.objects.values_list('wave1', flat=True).filter(stimuli_id__in=rest_stimuli_group_coh, test_result=obj.id)
+            wave2 = TestResultStimuli.objects.values_list('wave2', flat=True).filter(stimuli_id__in=rest_stimuli_group_coh, test_result=obj.id)
+            wave3 = TestResultStimuli.objects.values_list('wave3', flat=True).filter(stimuli_id__in=rest_stimuli_group_coh, test_result=obj.id)
+            pc1 = np.nanmean(signal.coherence(wave1, wave2)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave2)[1])) else 1
+            pc2 = np.nanmean(signal.coherence(wave1, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave3)[1])) else 1
+            pc3 = np.nanmean(signal.coherence(wave2, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave2, wave3)[1])) else 1
+            pc = (pc1 + pc2 + pc3) / 3 * 100
+            rest_value_coh = pc
         else:
             rest_value_coh = float(0)
 

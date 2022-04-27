@@ -241,13 +241,57 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'test', 'test_results_stimuli', 'test_results_parameters', 'test_results_parameters']
         read_only_fields = ['user', 'date']
 
-    def get_test_results_stimuli(self, obj):
+    @classmethod
+    def _get_wave(cls, pows, ind):
+        return [i[ind] for i in pows]
+
+    @classmethod
+    def _get_coh(cls, pows):
+        WAVE1_INDEX = 67
+        WAVE2_INDEX = 57
+        WAVE3_INDEX = 62
+        wave1 = cls._get_wave(pows, WAVE1_INDEX)
+        wave2 = cls._get_wave(pows, WAVE2_INDEX)
+        wave3 = cls._get_wave(pows, WAVE3_INDEX)
+
+        c1 = signal.coherence(wave1, wave2)
+        c2 = signal.coherence(wave1, wave3)
+        c3 = signal.coherence(wave2, wave3)
+
+        pc1 = np.nanmean(c1[1]) if np.any(np.isfinite(c1[1])) else 1
+        pc2 = np.nanmean(c2[1]) if np.any(np.isfinite(c2[1])) else 1
+        pc3 = np.nanmean(c3[1]) if np.any(np.isfinite(c3[1])) else 1
+
+        return (pc1 + pc2 + pc3) / 3 * 100
+
+    def get_test_results_stimuli(self, obj: TestResultStimuli):
         stimuli_result_queryset = TestResultStimuli.objects.values('stimuli').filter(test_result=obj.id)
         stimuli_queryset = Stimulus.objects.filter(id__in=stimuli_result_queryset,
                                                    test_results_stimulus__test_result=obj.id).annotate(
             fa1_value=Avg(F('test_results_stimulus__fa1')), fa2_value=Avg(F('test_results_stimulus__fa2')),
-            coh_value=Avg(F('test_results_stimulus__coh')), tar_value=Avg(F('test_results_stimulus__tar')))
-        return StimuliList1Serializer(stimuli_queryset, many=True).data
+            tar_value=Avg(F('test_results_stimulus__tar')))
+
+        pows = {}
+        stimuli_cohs = {}
+        test_dataset = TestResultStimuli.objects.filter(test_result__id=obj.id)
+        for data_item in test_dataset:
+            if data_item.stimuli.id not in pows:
+                pows[data_item.stimuli.id] = list()
+            pows[data_item.stimuli.id].append(data_item.pow)
+
+        for k, v in pows.items():
+            stimuli_cohs[k] = self._get_coh(v)
+
+        mutable_serializer = StimuliList1Serializer(stimuli_queryset, many=True).data.copy()
+
+        _m = list()
+
+        for item in mutable_serializer:
+            _item = item.copy()
+            _item['coh_value'] = stimuli_cohs[item['id']]
+            _m.append(_item)
+
+        return _m
 
     def get_test_results_parameters(self, obj):
 

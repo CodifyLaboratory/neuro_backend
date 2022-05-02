@@ -211,9 +211,317 @@ class TestResultDetailExportSerializer(serializers.ModelSerializer):
     """ Result of test Export View by stimuli """
     stimuli = serializers.StringRelatedField()
 
+    AF3_theta = serializers.SerializerMethodField()
+    AF3_alpha = serializers.SerializerMethodField()
+    AF3_betaL = serializers.SerializerMethodField()
+    AF3_betaH = serializers.SerializerMethodField()
+    AF3_gamma = serializers.SerializerMethodField()
+
+    F7_theta = serializers.SerializerMethodField()
+    F7_alpha = serializers.SerializerMethodField()
+    F7_betaL = serializers.SerializerMethodField()
+    F7_betaH = serializers.SerializerMethodField()
+    F7_gamma = serializers.SerializerMethodField()
+
+    F3_theta = serializers.SerializerMethodField()
+    F3_alpha = serializers.SerializerMethodField()
+    F3_betaL = serializers.SerializerMethodField()
+    F3_betaH = serializers.SerializerMethodField()
+    F3_gamma = serializers.SerializerMethodField()
+
+    FC5_theta = serializers.SerializerMethodField()
+    FC5_alpha = serializers.SerializerMethodField()
+    FC5_betaL = serializers.SerializerMethodField()
+    FC5_betaH = serializers.SerializerMethodField()
+    FC5_gamma = serializers.SerializerMethodField()
+
+    T7_theta = serializers.SerializerMethodField()
+    T7_alpha = serializers.SerializerMethodField()
+    T7_betaL = serializers.SerializerMethodField()
+    T7_betaH = serializers.SerializerMethodField()
+    T7_gamma = serializers.SerializerMethodField()
+
+    P7_theta = serializers.SerializerMethodField()
+    P7_alpha = serializers.SerializerMethodField()
+    P7_betaL = serializers.SerializerMethodField()
+    P7_betaH = serializers.SerializerMethodField()
+    P7_gamma = serializers.SerializerMethodField()
+
+    O1_theta = serializers.SerializerMethodField()
+    O1_alpha = serializers.SerializerMethodField()
+    O1_betaL = serializers.SerializerMethodField()
+    O1_betaH = serializers.SerializerMethodField()
+    O1_gamma = serializers.SerializerMethodField()
+
+    O2_theta = serializers.SerializerMethodField()
+    O2_alpha = serializers.SerializerMethodField()
+    O2_betaL = serializers.SerializerMethodField()
+    O2_betaH = serializers.SerializerMethodField()
+    O2_gamma = serializers.SerializerMethodField()
+
+    P8_theta = serializers.SerializerMethodField()
+    P8_alpha = serializers.SerializerMethodField()
+    P8_betaL = serializers.SerializerMethodField()
+    P8_betaH = serializers.SerializerMethodField()
+    P8_gamma = serializers.SerializerMethodField()
+
+    T8_theta = serializers.SerializerMethodField()
+    T8_alpha = serializers.SerializerMethodField()
+    T8_betaL = serializers.SerializerMethodField()
+    T8_betaH = serializers.SerializerMethodField()
+    T8_gamma = serializers.SerializerMethodField()
+
+    FC6_theta = serializers.SerializerMethodField()
+    FC6_alpha = serializers.SerializerMethodField()
+    FC6_betaL = serializers.SerializerMethodField()
+    FC6_betaH = serializers.SerializerMethodField()
+    FC6_gamma = serializers.SerializerMethodField()
+
+    F4_theta = serializers.SerializerMethodField()
+    F4_alpha = serializers.SerializerMethodField()
+    F4_betaL = serializers.SerializerMethodField()
+    F4_betaH = serializers.SerializerMethodField()
+    F4_gamma = serializers.SerializerMethodField()
+
+    F8_theta = serializers.SerializerMethodField()
+    F8_alpha = serializers.SerializerMethodField()
+    F8_betaL = serializers.SerializerMethodField()
+    F8_betaH = serializers.SerializerMethodField()
+    F8_gamma = serializers.SerializerMethodField()
+
+    AF4_theta = serializers.SerializerMethodField()
+    AF4_alpha = serializers.SerializerMethodField()
+    AF4_betaL = serializers.SerializerMethodField()
+    AF4_betaH = serializers.SerializerMethodField()
+    AF4_gamma = serializers.SerializerMethodField()
+
     class Meta:
         model = TestResultStimuli
-        fields = ['stimuli', 'pow']
+        fields = ['stimuli',
+                  'AF3_theta', 'AF3_alpha', 'AF3_betaL', 'AF3_betaH', 'AF3_gamma',
+                  'F7_theta', 'F7_alpha', 'F7_betaL', 'F7_betaH', 'F7_gamma',
+                  'F3_theta', 'F3_alpha', 'F3_betaL', 'F3_betaH', 'F3_gamma',
+                  'FC5_theta', 'FC5_alpha', 'FC5_betaL', 'FC5_betaH', 'FC5_gamma',
+                  'T7_theta', 'T7_alpha', 'T7_betaL', 'T7_betaH', 'T7_gamma',
+                  'P7_theta', 'P7_alpha', 'P7_betaL', 'P7_betaH', 'P7_gamma',
+                  'O1_theta', 'O1_alpha', 'O1_betaL', 'O1_betaH', 'O1_gamma',
+                  'O2_theta', 'O2_alpha', 'O2_betaL', 'O2_betaH', 'O2_gamma',
+                  'P8_theta', 'P8_alpha', 'P8_betaL', 'P8_betaH', 'P8_gamma',
+                  'T8_theta', 'T8_alpha', 'T8_betaL', 'T8_betaH', 'T8_gamma',
+                  'FC6_theta', 'FC6_alpha', 'FC6_betaL', 'FC6_betaH', 'FC6_gamma',
+                  'F4_theta', 'F4_alpha', 'F4_betaL', 'F4_betaH', 'F4_gamma',
+                  'F8_theta', 'F8_alpha', 'F8_betaL', 'F8_betaH', 'F8_gamma',
+                  'AF4_theta', 'AF4_alpha', 'AF4_betaL', 'AF4_betaH', 'AF4_gamma']
+
+    def get_AF3_theta(self, obj):
+        return obj.pow[0]
+
+    def get_AF3_alpha(self, obj):
+        return obj.pow[1]
+
+    def get_AF3_betaL(self, obj):
+        return obj.pow[2]
+
+    def get_AF3_betaH(self, obj):
+        return obj.pow[3]
+
+    def get_AF3_gamma(self, obj):
+        return obj.pow[4]
+
+    def get_F7_theta(self, obj):
+        return obj.pow[5]
+
+    def get_F7_alpha(self, obj):
+        return obj.pow[6]
+
+    def get_F7_betaL(self, obj):
+        return obj.pow[7]
+
+    def get_F7_betaH(self, obj):
+        return obj.pow[8]
+
+    def get_F7_gamma(self, obj):
+        return obj.pow[9]
+
+    def get_F3_theta(self, obj):
+        return obj.pow[10]
+
+    def get_F3_alpha(self, obj):
+        return obj.pow[11]
+
+    def get_F3_betaL(self, obj):
+        return obj.pow[12]
+
+    def get_F3_betaH(self, obj):
+        return obj.pow[13]
+
+    def get_F3_gamma(self, obj):
+        return obj.pow[14]
+
+    def get_FC5_theta(self, obj):
+        return obj.pow[15]
+
+    def get_FC5_alpha(self, obj):
+        return obj.pow[16]
+
+    def get_FC5_betaL(self, obj):
+        return obj.pow[17]
+
+    def get_FC5_betaH(self, obj):
+        return obj.pow[18]
+
+    def get_FC5_gamma(self, obj):
+        return obj.pow[19]
+
+    def get_T7_theta(self, obj):
+        return obj.pow[20]
+
+    def get_T7_alpha(self, obj):
+        return obj.pow[21]
+
+    def get_T7_betaL(self, obj):
+        return obj.pow[22]
+
+    def get_T7_betaH(self, obj):
+        return obj.pow[23]
+
+    def get_T7_gamma(self, obj):
+        return obj.pow[24]
+
+    def get_P7_theta(self, obj):
+        return obj.pow[25]
+
+    def get_P7_alpha(self, obj):
+        return obj.pow[26]
+
+    def get_P7_betaL(self, obj):
+        return obj.pow[27]
+
+    def get_P7_betaH(self, obj):
+        return obj.pow[28]
+
+    def get_P7_gamma(self, obj):
+        return obj.pow[29]
+
+    def get_O1_theta(self, obj):
+        return obj.pow[30]
+
+    def get_O1_alpha(self, obj):
+        return obj.pow[31]
+
+    def get_O1_betaL(self, obj):
+        return obj.pow[32]
+
+    def get_O1_betaH(self, obj):
+        return obj.pow[33]
+
+    def get_O1_gamma(self, obj):
+        return obj.pow[34]
+
+    def get_O2_theta(self, obj):
+        return obj.pow[35]
+
+    def get_O2_alpha(self, obj):
+        return obj.pow[36]
+
+    def get_O2_betaL(self, obj):
+        return obj.pow[37]
+
+    def get_O2_betaH(self, obj):
+        return obj.pow[38]
+
+    def get_O2_gamma(self, obj):
+        return obj.pow[39]
+
+    def get_P8_theta(self, obj):
+        return obj.pow[40]
+
+    def get_P8_alpha(self, obj):
+        return obj.pow[41]
+
+    def get_P8_betaL(self, obj):
+        return obj.pow[42]
+
+    def get_P8_betaH(self, obj):
+        return obj.pow[43]
+
+    def get_P8_gamma(self, obj):
+        return obj.pow[44]
+
+    def get_T8_theta(self, obj):
+        return obj.pow[45]
+
+    def get_T8_alpha(self, obj):
+        return obj.pow[46]
+
+    def get_T8_betaL(self, obj):
+        return obj.pow[47]
+
+    def get_T8_betaH(self, obj):
+        return obj.pow[48]
+
+    def get_T8_gamma(self, obj):
+        return obj.pow[49]
+
+    def get_FC6_theta(self, obj):
+        return obj.pow[50]
+
+    def get_FC6_alpha(self, obj):
+        return obj.pow[51]
+
+    def get_FC6_betaL(self, obj):
+        return obj.pow[52]
+
+    def get_FC6_betaH(self, obj):
+        return obj.pow[53]
+
+    def get_FC6_gamma(self, obj):
+        return obj.pow[54]
+
+    def get_F4_theta(self, obj):
+        return obj.pow[55]
+
+    def get_F4_alpha(self, obj):
+        return obj.pow[56]
+
+    def get_F4_betaL(self, obj):
+        return obj.pow[57]
+
+    def get_F4_betaH(self, obj):
+        return obj.pow[58]
+
+    def get_F4_gamma(self, obj):
+        return obj.pow[59]
+
+    def get_F8_theta(self, obj):
+        return obj.pow[60]
+
+    def get_F8_alpha(self, obj):
+        return obj.pow[61]
+
+    def get_F8_betaL(self, obj):
+        return obj.pow[62]
+
+    def get_F8_betaH(self, obj):
+        return obj.pow[63]
+
+    def get_F8_gamma(self, obj):
+        return obj.pow[64]
+
+    def get_AF4_theta(self, obj):
+        return obj.pow[65]
+
+    def get_AF4_alpha(self, obj):
+        return obj.pow[66]
+
+    def get_AF4_betaL(self, obj):
+        return obj.pow[67]
+
+    def get_AF4_betaH(self, obj):
+        return obj.pow[68]
+
+    def get_AF4_gamma(self, obj):
+        return obj.pow[69]
 
 
 class TestResultDetailSerializer(serializers.ModelSerializer):
@@ -324,17 +632,22 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         test_stimuli_group_coh = Calculation.objects.values('test_stimuli_group').filter(test__results=obj.id,
                                                                                          test=obj.test, parameter=3)
         if Stimulus.objects.filter(id__in=test_stimuli_group_coh).exists():
-            wave1 = TestResultStimuli.objects.values_list('wave1', flat=True).filter(stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
-            wave2 = TestResultStimuli.objects.values_list('wave2', flat=True).filter(stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
-            wave3 = TestResultStimuli.objects.values_list('wave3', flat=True).filter(stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
-            pc1 = np.nanmean(signal.coherence(wave1, wave2)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave2)[1])) else 1
-            pc2 = np.nanmean(signal.coherence(wave1, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave3)[1])) else 1
-            pc3 = np.nanmean(signal.coherence(wave2, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave2, wave3)[1])) else 1
+            wave1 = TestResultStimuli.objects.values_list('wave1', flat=True).filter(
+                stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
+            wave2 = TestResultStimuli.objects.values_list('wave2', flat=True).filter(
+                stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
+            wave3 = TestResultStimuli.objects.values_list('wave3', flat=True).filter(
+                stimuli_id__in=test_stimuli_group_coh, test_result=obj.id)
+            pc1 = np.nanmean(signal.coherence(wave1, wave2)[1]) if np.any(
+                np.isfinite(signal.coherence(wave1, wave2)[1])) else 1
+            pc2 = np.nanmean(signal.coherence(wave1, wave3)[1]) if np.any(
+                np.isfinite(signal.coherence(wave1, wave3)[1])) else 1
+            pc3 = np.nanmean(signal.coherence(wave2, wave3)[1]) if np.any(
+                np.isfinite(signal.coherence(wave2, wave3)[1])) else 1
             pc = (pc1 + pc2 + pc3) / 3 * 100
             test_value_coh = pc
         else:
             test_value_coh = float(0)
-
 
         # Test Value - TAR
         test_stimuli_group_tar = Calculation.objects.values('test_stimuli_group').filter(test__results=obj.id,
@@ -379,12 +692,18 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
         rest_stimuli_group_coh = Calculation.objects.values('rest_stimuli_group').filter(test__results=obj.id,
                                                                                          test=obj.test, parameter=3)
         if Stimulus.objects.filter(id__in=rest_stimuli_group_coh).exists():
-            wave1 = TestResultStimuli.objects.values_list('wave1', flat=True).filter(stimuli_id__in=rest_stimuli_group_coh, test_result=obj.id)
-            wave2 = TestResultStimuli.objects.values_list('wave2', flat=True).filter(stimuli_id__in=rest_stimuli_group_coh, test_result=obj.id)
-            wave3 = TestResultStimuli.objects.values_list('wave3', flat=True).filter(stimuli_id__in=rest_stimuli_group_coh, test_result=obj.id)
-            pc1 = np.nanmean(signal.coherence(wave1, wave2)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave2)[1])) else 1
-            pc2 = np.nanmean(signal.coherence(wave1, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave1, wave3)[1])) else 1
-            pc3 = np.nanmean(signal.coherence(wave2, wave3)[1]) if np.any(np.isfinite(signal.coherence(wave2, wave3)[1])) else 1
+            wave1 = TestResultStimuli.objects.values_list('wave1', flat=True).filter(
+                stimuli_id__in=rest_stimuli_group_coh, test_result=obj.id)
+            wave2 = TestResultStimuli.objects.values_list('wave2', flat=True).filter(
+                stimuli_id__in=rest_stimuli_group_coh, test_result=obj.id)
+            wave3 = TestResultStimuli.objects.values_list('wave3', flat=True).filter(
+                stimuli_id__in=rest_stimuli_group_coh, test_result=obj.id)
+            pc1 = np.nanmean(signal.coherence(wave1, wave2)[1]) if np.any(
+                np.isfinite(signal.coherence(wave1, wave2)[1])) else 1
+            pc2 = np.nanmean(signal.coherence(wave1, wave3)[1]) if np.any(
+                np.isfinite(signal.coherence(wave1, wave3)[1])) else 1
+            pc3 = np.nanmean(signal.coherence(wave2, wave3)[1]) if np.any(
+                np.isfinite(signal.coherence(wave2, wave3)[1])) else 1
             pc = (pc1 + pc2 + pc3) / 3 * 100
             rest_value_coh = pc
         else:
@@ -427,3 +746,50 @@ class TestResultDetailAdminSerializer(serializers.ModelSerializer):
             ))
 
         return CalculationList1Serializer(parameters_result_queryset, many=True).data
+
+
+class TestResultDetailAdminExportSerializer(serializers.ModelSerializer):
+    """ Result Detail for Admin View """
+    fa1_value = serializers.SerializerMethodField()
+    fa2_value = serializers.SerializerMethodField()
+    coh_value = serializers.SerializerMethodField()
+    tar_value = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Stimulus
+        fields = ['title', 'fa1_value', 'fa2_value', 'coh_value', 'tar_value']
+
+    def get_fa1_value(self, obj):
+        test_result_id = self.context.get('view').kwargs['pk']
+        stimuli = TestResultStimuli.objects.filter(test_result=test_result_id, stimuli=obj.id).aggregate(Avg('fa1'))[
+            'fa1__avg']
+        return stimuli
+
+    def get_fa2_value(self, obj):
+        test_result_id = self.context.get('view').kwargs['pk']
+        stimuli = TestResultStimuli.objects.filter(test_result=test_result_id, stimuli=obj.id).aggregate(Avg('fa2'))[
+            'fa2__avg']
+        return stimuli
+
+    def get_tar_value(self, obj):
+        test_result_id = self.context.get('view').kwargs['pk']
+        stimuli = TestResultStimuli.objects.filter(test_result=test_result_id, stimuli=obj.id).aggregate(Avg('tar'))[
+            'tar__avg']
+        return stimuli
+
+    def get_coh_value(self, obj):
+        test_result_id = self.context.get('view').kwargs['pk']
+        wave1 = TestResultStimuli.objects.values_list('wave1', flat=True).filter(test_result=test_result_id,
+                                                                                 stimuli=obj.id)
+        wave2 = TestResultStimuli.objects.values_list('wave2', flat=True).filter(test_result=test_result_id,
+                                                                                 stimuli=obj.id)
+        wave3 = TestResultStimuli.objects.values_list('wave3', flat=True).filter(test_result=test_result_id,
+                                                                                 stimuli=obj.id)
+        pc1 = np.nanmean(signal.coherence(wave1, wave2)[1]) if np.any(
+            np.isfinite(signal.coherence(wave1, wave2)[1])) else 1
+        pc2 = np.nanmean(signal.coherence(wave1, wave3)[1]) if np.any(
+            np.isfinite(signal.coherence(wave1, wave3)[1])) else 1
+        pc3 = np.nanmean(signal.coherence(wave2, wave3)[1]) if np.any(
+            np.isfinite(signal.coherence(wave2, wave3)[1])) else 1
+        pc = (pc1 + pc2 + pc3) / 3 * 100
+        return pc
